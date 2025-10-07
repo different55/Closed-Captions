@@ -4,12 +4,9 @@ namespace ClosedCaptions;
 
 public class CaptionsDialog : HudElement
 {
-    private CaptionsModSystem captionsMod;
     public CaptionsList captionsList;
     
-    public CaptionsDialog(ICoreClientAPI capi, CaptionsModSystem captionsMod) : base(capi) {
-        this.captionsMod = captionsMod;
-        
+    public CaptionsDialog(ICoreClientAPI capi) : base(capi) {
         ElementBounds dialogBounds = ElementBounds.FixedSize(300, 450).WithAlignment(EnumDialogArea.RightBottom).WithFixedPadding(50);
         SingleComposer = capi.Gui.CreateCompo("captions", dialogBounds);
         
@@ -22,8 +19,21 @@ public class CaptionsDialog : HudElement
     }
     
     public override string ToggleKeyCombinationCode => null;
+    public override double DrawOrder => 0.1999;
+    public override bool Focusable => false;
+
+    public override bool ShouldReceiveMouseEvents()
+    {
+        return false;
+    }
+
+    public override bool ShouldReceiveKeyboardEvents()
+    {
+        return false;
+    }
     
-    public override bool OnEscapePressed() {
-        return base.OnEscapePressed();
+    public override bool OnEscapePressed()
+    {
+        return false;
     }
 }

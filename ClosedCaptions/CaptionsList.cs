@@ -9,18 +9,22 @@ public class CaptionsList : GuiElement
 {
     private LoadedTexture textTexture;
     private TextDrawUtil textUtil;
-    public CairoFont font;
-    private ICoreClientAPI capi;
+    private CairoFont font;
 
     private static readonly int MAX_SOUNDS = 15;
     private static readonly int MAX_AGE_SECONDS = 4;
     public class Sound {
-        public bool active = false;
-        public double age;
+        public double age = -1;
         public string name;
-        public double textWidth;
+        public double textWidth = -1;
         public double yaw;
         public double volume;
+
+        public bool active
+        {
+            get => age >= 0;
+            set => age = (value) ? 0 : -1;
+        }
     }
     public Sound[] soundList = new Sound[MAX_SOUNDS];
     
@@ -28,7 +32,6 @@ public class CaptionsList : GuiElement
         textTexture = new LoadedTexture(capi);
         font = CairoFont.WhiteMediumText();
         textUtil = new TextDrawUtil();
-        this.capi = capi;
         for (int i = 0; i < MAX_SOUNDS; i++) { soundList[i] = new Sound(); }
     }
     
@@ -60,28 +63,31 @@ public class CaptionsList : GuiElement
     private void Update(float deltaTime) {
         for (var i = 0; i < MAX_SOUNDS; i++)
         {
-            if (soundList[i].active)
-            {
-                soundList[i].age += deltaTime;
-                if (soundList[i].age > MAX_AGE_SECONDS)
-                {
-                    for (var j = i; j < MAX_SOUNDS - 1; j++)
-                    {
-                        soundList[j] = soundList[j + 1];
-                    }
-                    soundList[MAX_SOUNDS - 1] = new Sound();
-                }
-            }
+            // Early out if we hit the end of the active sounds.
+            if (!soundList[i].active) break;
+            
+            soundList[i].age += deltaTime;
+            
+            // Early out if this sound is still young.
+            if (soundList[i].age < MAX_AGE_SECONDS) continue;
+
+            RemoveSound(i);
         }
+    }
+
+    private void RemoveSound(int index)
+    {
+        for (var j = index; j < MAX_SOUNDS - 1; j++)
+            soundList[j] = soundList[j + 1];
+        soundList[MAX_SOUNDS - 1] = new Sound();
     }
     
     private void DrawText(Context ctx)
     {
         font.SetupContext(ctx);
-        
-        ctx.SetSourceRGBA(.5, .1, .5, 0.75);
-        ctx.Rectangle(0, 0, 300, 450);
-        ctx.Fill();
+        //ctx.SetSourceRGBA(0, .1, .5, 0.75);
+        //ctx.Rectangle(0, 0, 300, 450);
+        //ctx.Fill();
         
         double y = 30 * MAX_SOUNDS;
         foreach (var sound in soundList)
@@ -89,7 +95,6 @@ public class CaptionsList : GuiElement
             y -= 30;
             if (!sound.active) continue;
 
-            // TODO: Just calculate this when it's loaded.
             if (sound.textWidth == -1)
             {
                 sound.textWidth = ctx.TextExtents(sound.name).Width;
@@ -135,39 +140,41 @@ public class CaptionsList : GuiElement
         }
     }
     
-    public void Add(string name, double yaw, double volume)
+    public void AddSound(string name, double yaw, double volume)
     {
-        capi.Logger.Debug("[CAPTIONS] Started: " + name);
-        Sound targetSound = null;
+        // Refresh existing slot if it's already present. 
         foreach (var sound in soundList)
         {
             if (sound.active && sound.name == name)
             {
-                targetSound = sound;
-                break;
+                sound.age = 0;
+                sound.yaw = yaw;
+                sound.volume = volume;
+                return;
             }
         }
-        if (targetSound == null)
+     
+        // Fill an empty slot.
+        foreach (var sound in soundList)
         {
-            targetSound = soundList[0];
-            foreach (var sound in soundList)
+            if (sound.active) continue;
+            sound.name = name;
+            sound.age = 0;
+            sound.yaw = yaw;
+            sound.volume = volume;
+            return;
+        }
+        
+        // Else, recycle the oldest active slot.
+        int oldestSound = 0;
+        for (var i = 1; i < MAX_SOUNDS; i++)
+        {
+            if (soundList[i].age > soundList[oldestSound].age)
             {
-                if (!sound.active)
-                {
-                    targetSound = sound;
-                    break;
-                }
-                if (sound.age > targetSound.age)
-                {
-                    targetSound = sound;
-                }
+                oldestSound = i;
             }
         }
-        targetSound.active = true;
-        targetSound.name = name;
-        targetSound.age = 0;
-        targetSound.yaw = yaw;
-        targetSound.volume = volume;
-        targetSound.textWidth = -1;
+        RemoveSound(oldestSound);
+        AddSound(name, yaw, volume);
     }
 }

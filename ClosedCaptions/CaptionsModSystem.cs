@@ -24,7 +24,7 @@ public class CaptionsModSystem : ModSystem
         
         capi.Event.IsPlayerReady += (ref EnumHandling handling) =>
         {
-            Patch_ClientMain_StartPlaying.captions = new CaptionsDialog(capi, this);
+            Patch_ClientMain_StartPlaying.captions = new CaptionsDialog(capi);
             Patch_ClientMain_StartPlaying.captions.TryOpen();
             return true;
         };
@@ -65,7 +65,7 @@ public class Patch_ClientMain_StartPlaying
         
         if (sound.Position.IsZero)
         {
-            captions?.captionsList?.Add(name, 0, sound.Volume);
+            captions?.captionsList?.AddSound(name, 0, sound.Volume);
             return;
         }
         
@@ -81,6 +81,6 @@ public class Patch_ClientMain_StartPlaying
         // Make close sounds directionless.
         var yaw = (dist < 1.5) ? Math.Atan2(dz, dx) : Double.NaN;
         
-        captions?.captionsList?.Add(name, yaw, sound.Volume);
+        captions?.captionsList?.AddSound(name, yaw, sound.Volume);
     }
 }
