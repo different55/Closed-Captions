@@ -30,7 +30,7 @@ public class CaptionsList : GuiElement
     
     public CaptionsList(ICoreClientAPI capi, ElementBounds bounds) : base(capi, bounds) {
         textTexture = new LoadedTexture(capi);
-        font = CairoFont.WhiteMediumText();
+        font = CairoFont.WhiteMediumText().WithWeight(FontWeight.Bold);
         textUtil = new TextDrawUtil();
         for (int i = 0; i < MAX_SOUNDS; i++) { soundList[i] = new Sound(); }
     }
@@ -102,7 +102,7 @@ public class CaptionsList : GuiElement
         
             var brightness = ((1 - (sound.age / MAX_AGE_SECONDS)) * Math.Max(1, sound.volume) / 2 + 0.5);
             
-            ctx.SetSourceRGBA(0, 0, 0, 0.5 + (brightness * 0.5));
+            ctx.SetSourceRGBA(0, 0, 0, 0.25 + (brightness * 0.5));
             ctx.Rectangle(0, y, 300, 30);
             ctx.Fill();
 
@@ -116,26 +116,60 @@ public class CaptionsList : GuiElement
             {
                 ctx.SetSourceRGB(brightness, brightness, brightness);
             }
-            textUtil.DrawTextLine(ctx, font, soundName, 150 - sound.textWidth / 2, y+2);
+            textUtil.DrawTextLine(ctx, font, soundName, 150 - sound.textWidth / 2, y+4);
 
             if (Double.IsNaN(sound.yaw)) continue;
             
             var direction = GameMath.Mod((sound.yaw + api.World.Player.CameraYaw) / GameMath.TWOPI * 12, 12);
             if (direction > 2 && direction < 4)
             {
-                textUtil.DrawTextLine(ctx, font, ">>", 270, y);
+                ctx.NewPath();
+                ctx.MoveTo(295, y+15);
+                ctx.LineTo(280, y+15 - 13);
+                ctx.LineTo(280, y+15 + 13);
+                ctx.LineTo(295, y+15);
+                ctx.MoveTo(280, y+15);
+                ctx.LineTo(265, y+15 - 13);
+                ctx.LineTo(265, y+15 + 13);
+                ctx.LineTo(280, y+15);
+                ctx.ClosePath();
+                ctx.Fill();
+                //textUtil.DrawTextLine(ctx, font, ">>", 270, y+4);
             }
             else if (direction > 1 && direction < 5)
             {
-                textUtil.DrawTextLine(ctx, font, ">", 270, y);
+                ctx.NewPath();
+                ctx.MoveTo(280, y+15);
+                ctx.LineTo(265, y+15 - 13);
+                ctx.LineTo(265, y+15 + 13);
+                ctx.LineTo(280, y+15);
+                ctx.Fill();
+                //textUtil.DrawTextLine(ctx, font, ">", 270, y+4);
             }
             else if (direction > 8 && direction < 10)
             {
-                textUtil.DrawTextLine(ctx, font, "<<", 30, y);
+                ctx.NewPath();
+                ctx.MoveTo(10, y+15);
+                ctx.LineTo(25, y+15 - 13);
+                ctx.LineTo(25, y+15 + 13);
+                ctx.LineTo(10, y+15);
+                ctx.MoveTo(25, y+15);
+                ctx.LineTo(40, y+15 - 13);
+                ctx.LineTo(40, y+15 + 13);
+                ctx.LineTo(25, y+15);
+                ctx.ClosePath();
+                ctx.Fill();
+                //textUtil.DrawTextLine(ctx, font, "<<", 30, y+4);
             }
             else if (direction > 7 && direction < 11)
             {
-                textUtil.DrawTextLine(ctx, font, "<", 30, y);
+                ctx.NewPath();
+                ctx.MoveTo(25, y+15);
+                ctx.LineTo(40, y+15 - 13);
+                ctx.LineTo(40, y+15 + 13);
+                ctx.LineTo(25, y+15);
+                ctx.Fill();
+                //textUtil.DrawTextLine(ctx, font, "<", 30, y+4);
             }
         }
     }
