@@ -58,12 +58,18 @@ public class CaptionsList : GuiElement
     }
     
     private void Update(float deltaTime) {
-        foreach (var sound in soundList) {
-            if (sound.active) {
-                sound.age += deltaTime;
-                if (sound.age > MAX_AGE_SECONDS) {
-                    capi.Logger.Debug("[CAPTIONS] Ended: " + sound.name);
-                    sound.active = false;
+        for (var i = 0; i < MAX_SOUNDS; i++)
+        {
+            if (soundList[i].active)
+            {
+                soundList[i].age += deltaTime;
+                if (soundList[i].age > MAX_AGE_SECONDS)
+                {
+                    for (var j = i; j < MAX_SOUNDS - 1; j++)
+                    {
+                        soundList[j] = soundList[j + 1];
+                    }
+                    soundList[MAX_SOUNDS - 1] = new Sound();
                 }
             }
         }
