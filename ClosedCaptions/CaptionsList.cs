@@ -16,7 +16,7 @@ public class CaptionsList : GuiElement
     public class Sound {
         public double age = -1;
         public string name;
-        public double textWidth = -1;
+        public double textWidth;
         public double yaw;
         public double volume;
 
@@ -94,11 +94,6 @@ public class CaptionsList : GuiElement
         {
             y -= 30;
             if (!sound.active) continue;
-
-            if (sound.textWidth == -1)
-            {
-                sound.textWidth = ctx.TextExtents(sound.name).Width;
-            }
         
             var brightness = ((1 - (sound.age / MAX_AGE_SECONDS)) * Math.Max(1, sound.volume) / 2 + 0.5);
             
@@ -192,8 +187,10 @@ public class CaptionsList : GuiElement
         foreach (var sound in soundList)
         {
             if (sound.active) continue;
-            sound.name = name;
             sound.age = 0;
+            sound.name = name;
+            font.SetupContext(CairoFont.FontMeasuringContext);
+            sound.textWidth = CairoFont.FontMeasuringContext.TextExtents(sound.name).Width;
             sound.yaw = yaw;
             sound.volume = volume;
             return;
