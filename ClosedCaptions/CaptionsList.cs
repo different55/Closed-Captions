@@ -30,7 +30,7 @@ public class CaptionsList : GuiElement
     
     public CaptionsList(ICoreClientAPI capi, ElementBounds bounds) : base(capi, bounds) {
         textTexture = new LoadedTexture(capi);
-        font = CairoFont.WhiteMediumText().WithWeight(FontWeight.Bold);
+        font = CairoFont.WhiteMediumText().WithFont("Lora").WithWeight(FontWeight.Bold).WithFontSize(24);
         textUtil = new TextDrawUtil();
         for (int i = 0; i < MAX_SOUNDS; i++) { soundList[i] = new Sound(); }
     }
@@ -103,7 +103,7 @@ public class CaptionsList : GuiElement
             var brightness = ((1 - (sound.age / MAX_AGE_SECONDS)) * Math.Max(1, sound.volume) / 2 + 0.5);
             
             ctx.SetSourceRGBA(0, 0, 0, 0.25 + (brightness * 0.5));
-            ctx.Rectangle(0, y, 300, 30);
+            ctx.Rectangle(0, y, 300, 32);
             ctx.Fill();
 
             var soundName = sound.name;
