@@ -7,10 +7,10 @@ public class CaptionsDialog : HudElement
     public CaptionsList captionsList;
     
     public CaptionsDialog(ICoreClientAPI capi) : base(capi) {
-        ElementBounds dialogBounds = ElementBounds.FixedSize(300, 450).WithAlignment(EnumDialogArea.RightBottom).WithFixedPadding(50);
+        ElementBounds dialogBounds = ElementBounds.FixedSize(300, 320).WithAlignment(EnumDialogArea.RightBottom).WithFixedPadding(16);
         SingleComposer = capi.Gui.CreateCompo("captions", dialogBounds);
         
-        ElementBounds listBounds = ElementBounds.FixedSize(300, 450);
+        ElementBounds listBounds = ElementBounds.FixedSize(300, 320);
         dialogBounds.WithChild(listBounds);
         captionsList = new CaptionsList(SingleComposer.Api, listBounds);
         SingleComposer.AddInteractiveElement(captionsList, "captionsList");

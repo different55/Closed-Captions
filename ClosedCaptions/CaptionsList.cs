@@ -11,7 +11,7 @@ public class CaptionsList : GuiElement
     private TextDrawUtil textUtil;
     private CairoFont font;
 
-    private static readonly int MAX_SOUNDS = 15;
+    private static readonly int MAX_SOUNDS = 10;
     private static readonly int MAX_AGE_SECONDS = 4;
     public class Sound {
         public double age = -1;
@@ -30,7 +30,7 @@ public class CaptionsList : GuiElement
     
     public CaptionsList(ICoreClientAPI capi, ElementBounds bounds) : base(capi, bounds) {
         textTexture = new LoadedTexture(capi);
-        font = CairoFont.WhiteMediumText().WithFont("Lora").WithWeight(FontWeight.Bold).WithFontSize(24);
+        font = CairoFont.WhiteMediumText().WithFont("Lora").WithFontSize(28);
         textUtil = new TextDrawUtil();
         for (int i = 0; i < MAX_SOUNDS; i++) { soundList[i] = new Sound(); }
     }
@@ -52,7 +52,7 @@ public class CaptionsList : GuiElement
     }
     
     public void Recompose() {
-        ImageSurface imageSurface = new ImageSurface(Format.Argb32, 300, 450);
+        ImageSurface imageSurface = new ImageSurface(Format.Argb32, 300, 320);
         Context context = genContext(imageSurface);
         DrawText(context);
         generateTexture(imageSurface, ref textTexture);
@@ -89,10 +89,10 @@ public class CaptionsList : GuiElement
         //ctx.Rectangle(0, 0, 300, 450);
         //ctx.Fill();
         
-        double y = 30 * MAX_SOUNDS;
+        double y = 32 * MAX_SOUNDS;
         foreach (var sound in soundList)
         {
-            y -= 30;
+            y -= 32;
             if (!sound.active) continue;
         
             var brightness = ((1 - (sound.age / MAX_AGE_SECONDS)) * Math.Max(1, sound.volume) / 2 + 0.5);
@@ -100,18 +100,22 @@ public class CaptionsList : GuiElement
             ctx.SetSourceRGBA(0, 0, 0, 0.25 + (brightness * 0.5));
             ctx.Rectangle(0, y, 300, 32);
             ctx.Fill();
+            ctx.Rectangle(0, y, 300, 32);
+            ctx.SetSourceRGBA(.25, .25, .25, 0.5 + (brightness * 0.5));
+            ctx.LineWidth = 1.0;
+            ctx.Stroke();
 
             var soundName = sound.name;
             if (soundName.StartsWith("!"))
             {
                 soundName = soundName.Substring(1);
-                ctx.SetSourceRGB(brightness, brightness * 0.25, brightness * .125);
+                ctx.SetSourceRGB(brightness, brightness * 0.35, brightness * .25);
             }
             else
             {
                 ctx.SetSourceRGB(brightness, brightness, brightness);
             }
-            textUtil.DrawTextLine(ctx, font, soundName, 150 - sound.textWidth / 2, y+4);
+            textUtil.DrawTextLine(ctx, font, soundName, 150 - sound.textWidth / 2, y+6);
 
             if (Double.IsNaN(sound.yaw)) continue;
             
@@ -119,10 +123,10 @@ public class CaptionsList : GuiElement
             if (direction > 2 && direction < 4)
             {
                 ctx.NewPath();
-                ctx.MoveTo(295, y+15);
-                ctx.LineTo(280, y+15 - 13);
-                ctx.LineTo(280, y+15 + 13);
-                ctx.LineTo(295, y+15);
+                ctx.MoveTo(292, y+15);
+                ctx.LineTo(277, y+15 - 13);
+                ctx.LineTo(277, y+15 + 13);
+                ctx.LineTo(292, y+15);
                 ctx.MoveTo(280, y+15);
                 ctx.LineTo(265, y+15 - 13);
                 ctx.LineTo(265, y+15 + 13);
@@ -144,10 +148,10 @@ public class CaptionsList : GuiElement
             else if (direction > 8 && direction < 10)
             {
                 ctx.NewPath();
-                ctx.MoveTo(10, y+15);
-                ctx.LineTo(25, y+15 - 13);
-                ctx.LineTo(25, y+15 + 13);
-                ctx.LineTo(10, y+15);
+                ctx.MoveTo(13, y+15);
+                ctx.LineTo(28, y+15 - 13);
+                ctx.LineTo(28, y+15 + 13);
+                ctx.LineTo(13, y+15);
                 ctx.MoveTo(25, y+15);
                 ctx.LineTo(40, y+15 - 13);
                 ctx.LineTo(40, y+15 + 13);
