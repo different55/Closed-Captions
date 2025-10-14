@@ -104,24 +104,33 @@ public class CaptionsList : GuiElement
             var brightness = ((1 - (sound.age / MAX_AGE_SECONDS)) * Math.Max(1, sound.volume) / 2 + 0.5);
             
             ctx.SetSourceRGBA(0, 0, 0, 0.25 + (brightness * 0.5));
-            ctx.Rectangle(0, y, 300, 32);
+            ctx.Rectangle(1, y+1, 298, 30);
             ctx.Fill();
-            ctx.Rectangle(0, y, 300, 32);
+            //ctx.Rectangle(0, y, 300, 32);
             ctx.SetSourceRGBA(.25, .25, .25, 0.5 + (brightness * 0.5));
             ctx.LineWidth = 1.0;
-            ctx.Stroke();
+            //ctx.Stroke();
 
             var soundName = sound.name;
             if (soundName.StartsWith("!"))
             {
                 soundName = soundName.Substring(1);
-                ctx.SetSourceRGB(brightness, brightness * 0.35, brightness * .25);
+                ctx.SetSourceRGB(brightness, brightness * 0.635, brightness * .27);
+                ctx.Rectangle(0, y, 300, 32);
+                ctx.Stroke();
+            }
+            else if (soundName.StartsWith("~"))
+            {
+                soundName = soundName.Substring(1);
+                ctx.SetSourceRGB(brightness * 0.7, brightness, brightness*0.9);
+                ctx.Rectangle(0, y, 300, 32);
+                ctx.Stroke();
             }
             else
             {
                 ctx.SetSourceRGB(brightness, brightness, brightness);
             }
-            textUtil.DrawTextLine(ctx, font, soundName, 150 - sound.textWidth / 2, y+6);
+            textUtil.DrawTextLine(ctx, font, soundName, 150 - sound.textWidth / 2, y+3);
             
             if (sound.position == null || sound.position.IsZero) continue;
             
