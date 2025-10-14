@@ -14,7 +14,7 @@ public class CaptionsList : GuiElement
     private CairoFont font;
 
     private static readonly int MAX_SOUNDS = 10;
-    private static readonly int MAX_AGE_SECONDS = 4;
+    private static readonly int MAX_AGE_SECONDS = 400;
     private static readonly double RANGE_THRESHOLD = 0.8;
     
     public class Sound {
@@ -112,6 +112,9 @@ public class CaptionsList : GuiElement
             //ctx.Stroke();
 
             var soundName = sound.name;
+            if (soundName.StartsWith("?"))
+                soundName = soundName.Substring(1);
+            
             if (soundName.StartsWith("!"))
             {
                 soundName = soundName.Substring(1);
