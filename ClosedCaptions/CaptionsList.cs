@@ -9,6 +9,9 @@ namespace ClosedCaptions;
 public class CaptionsList : GuiElement
 {
     private LoadedTexture textTexture;
+    private ImageSurface imageSurface;
+    private Context ctx;
+    
     private TextDrawUtil textUtil;
     private CairoFont font;
 
@@ -35,32 +38,39 @@ public class CaptionsList : GuiElement
         textTexture = new LoadedTexture(capi);
         // Normalize font size to screen height so GUI looks consistent on all resolutions
         font = CairoFont.WhiteMediumText().WithFont("Lora").WithFontSize(28f / capi.Render.FrameHeight);
+        imageSurface = new ImageSurface(Format.Argb32, 300, 320);
+        ctx = genContext(imageSurface);
         textUtil = new TextDrawUtil();
+        
         for (int i = 0; i < MAX_SOUNDS; i++) { sounds[i] = new Sound(); }
     }
     
     public override void Dispose() {
         textTexture?.Dispose();
+        imageSurface?.Dispose();
+        ctx?.Dispose();
     }
     
     public override void ComposeElements(Context ctx, ImageSurface surface) {
         font.SetupContext(ctx);
         Bounds.CalcWorldBounds();
-        Recompose();
+        DrawCaptions(ctx);
+        generateTexture(imageSurface, ref textTexture);
     }
     
     public override void RenderInteractiveElements(float deltaTime) {
         Update(deltaTime);
-        Recompose();
+        DrawCaptions(ctx);
+        generateTexture(imageSurface, ref textTexture);
         api.Render.Render2DTexturePremultipliedAlpha(textTexture.TextureId, (int)Bounds.renderX, (int)Bounds.renderY, (int)Bounds.InnerWidth, (int)Bounds.InnerHeight);
     }
     
-    public void Recompose() {
-        ImageSurface imageSurface = new ImageSurface(Format.Argb32, 300, 320);
-        Context context = genContext(imageSurface);
-        DrawCaptions(context);
-        generateTexture(imageSurface, ref textTexture);
-        context.Dispose();
+    public void Recompose() { 
+        ImageSurface imageSurface = new ImageSurface(Format.Argb32, 300, 320); 
+        Context context = genContext(imageSurface); 
+        DrawCaptions(context); 
+        generateTexture(imageSurface, ref textTexture); 
+        context.Dispose(); 
         imageSurface.Dispose();
     }
     
@@ -93,6 +103,10 @@ public class CaptionsList : GuiElement
         //ctx.SetSourceRGBA(0, .1, .5, 0.75);
         //ctx.Rectangle(0, 0, 300, 320);
         //ctx.Fill();
+        ctx.SetSourceRGB(0, 0, 0);
+        ctx.Operator = Operator.Clear;
+        ctx.Paint();
+        ctx.Operator = Operator.Over;
         
         double y = 32 * MAX_SOUNDS;
         var playerPos = api.World.Player.Entity.Pos;
