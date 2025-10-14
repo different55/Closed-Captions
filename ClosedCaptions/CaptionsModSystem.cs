@@ -18,9 +18,9 @@ public class CaptionsModSystem : ModSystem
     {
         base.StartClientSide(capi);
         
+        Patch_ClientMain_StartPlaying.capi = capi;
         harmony = new Harmony(Mod.Info.ModID);
         harmony.PatchAll(Assembly.GetExecutingAssembly());
-        Patch_ClientMain_StartPlaying.capi = capi;
         
         capi.Event.IsPlayerReady += (ref EnumHandling handling) =>
         {
@@ -42,45 +42,6 @@ public class Patch_ClientMain_StartPlaying
 
     public static void Prefix(ILoadedSound loadedSound, AssetLocation location)
     {
-        // Unknown condition yoinked without understanding from SubtitlesMod
-        var player = capi.World.Player;
-        if (player == null) return;
-        
-        var sound = loadedSound.Params;
-        
-        // Ignore music
-        if (sound.SoundType == EnumSoundType.Music) return;
-
-        var path = location.Path;
-        var id = path.StartsWith("sounds/") && path.EndsWith(".ogg") ? path.Substring(7, path.Length - 7 - 4) : path;
-        var lastChar = id.ToCharArray(id.Length - 1, 1)[0];
-        if (lastChar >= '0' && lastChar <= '9')
-            id = id.Substring(0, id.Length - 1);
-        
-        var name = Lang.GetIfExists("captions:" + id);
-        // Ignore specified sounds
-        if (name == "") return;
-        // Unnamed sounds
-        if (name == null) name = id;
-        
-        if (sound.Position.IsZero)
-        {
-            captions?.captionsList?.AddSound(name, 0, sound.Volume);
-            return;
-        }
-        
-        var playerPos = player.Entity.Pos.AsBlockPos;
-        var dx = sound.Position.X - playerPos.X;
-        var dy = sound.Position.Y - playerPos.Y;
-        var dz = sound.Position.Z - playerPos.Z;
-        var dist = Math.Sqrt(dx * dx + dy * dy + dz * dz);
-        
-        // Ignore sounds that are out of range.
-        if (dist > sound.Range * RANGE_THRESHOLD) return;
-        
-        // Make close sounds directionless.
-        var yaw = (dist < 1.5) ? Math.Atan2(dz, dx) : Double.NaN;
-        
-        captions?.captionsList?.AddSound(name, yaw, sound.Volume);
+        captions?.captionsList?.ProcessSound(loadedSound.Params);
     }
 }

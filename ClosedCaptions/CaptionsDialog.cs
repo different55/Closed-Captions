@@ -22,10 +22,7 @@ public class CaptionsDialog : HudElement
     public override double DrawOrder => 0.1999;
     public override bool Focusable => false;
 
-    public override bool ShouldReceiveMouseEvents()
-    {
-        return false;
-    }
+    public override bool ShouldReceiveMouseEvents() => false;
 
     public override bool ShouldReceiveKeyboardEvents()
     {
