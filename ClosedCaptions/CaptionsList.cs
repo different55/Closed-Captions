@@ -2,7 +2,6 @@ using Vintagestory.API.Client;
 using Cairo;
 using Vintagestory.API.MathTools;
 using System;
-using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 
 namespace ClosedCaptions;
@@ -34,7 +33,8 @@ public class CaptionsList : GuiElement
     
     public CaptionsList(ICoreClientAPI capi, ElementBounds bounds) : base(capi, bounds) {
         textTexture = new LoadedTexture(capi);
-        font = CairoFont.WhiteMediumText().WithFont("Lora").WithFontSize(28);
+        // Normalize font size to screen height so GUI looks consistent on all resolutions
+        font = CairoFont.WhiteMediumText().WithFont("Lora").WithFontSize(28f / capi.Render.FrameHeight);
         textUtil = new TextDrawUtil();
         for (int i = 0; i < MAX_SOUNDS; i++) { sounds[i] = new Sound(); }
     }
@@ -64,7 +64,8 @@ public class CaptionsList : GuiElement
         imageSurface.Dispose();
     }
     
-    private void Update(float deltaTime) {
+    private void Update(float deltaTime) 
+    {
         for (var i = 0; i < MAX_SOUNDS; i++)
         {
             // Early out if we hit the end of the active sounds.
