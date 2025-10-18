@@ -399,5 +399,18 @@
   "captions:weather/lightning-nodistance":      "!Lightning strikes",
   "captions:weather/lowgrumble":                "Distant thunder",
   "captions:weather/wind-leafless":             "Wind blows",
-  "captions:weather/wind-leafy":                "Wind rustles"
+  "captions:weather/wind-leafy":                "Wind rustles",
+  
+  "PRIMITIVE SURVIVAL":                         "",
+  "captions:grunting":                          "Grunting",
+  "captions:entity/livingdead/breathe":         "The dead wheeze",
+  "captions:entity/livingdead/growl":           "The dead moan",
+  "captions:entity/livingdead/rattle":          "Bones rattling",
+  "captions:entity/livingdead/screech":         "The dead screech",
+  "captions:fireworks/bamboobarrage":           "Fireworks explode",
+  "captions:fireworks/beehive":                 "Fireworks explode",
+  "captions:fireworks/cherrybomb":              "Fireworks crackle",
+  "captions:fireworks/fountain":                "Fireworks crackle",
+  "captions:fireworks/whistlebang":             "Fireworks whistle",
+  "captions:player/strike":                     "Player attacks"
 }
