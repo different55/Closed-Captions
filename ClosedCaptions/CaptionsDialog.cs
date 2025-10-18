@@ -1,3 +1,4 @@
+using HarmonyLib;
 using Vintagestory.API.Client;
 
 namespace ClosedCaptions;
@@ -6,11 +7,21 @@ public class CaptionsDialog : HudElement
 {
     public CaptionsList captionsList;
     
-    public CaptionsDialog(ICoreClientAPI capi) : base(capi) {
-        ElementBounds dialogBounds = ElementBounds.FixedSize(300, CaptionsList.MAX_CAPTIONS*32).WithAlignment(EnumDialogArea.RightBottom).WithFixedPadding(16);
+    public CaptionsDialog(ICoreClientAPI capi) : base(capi)
+    {
+        var cfg = CaptionsModSystem.config;
+        ElementBounds dialogBounds = ElementBounds.FixedSize(
+            cfg.Width*cfg.UIScale+2,
+            cfg.Height*cfg.MaxCaptions*cfg.UIScale+2
+            )
+            .WithAlignment(cfg.Position)
+            .WithFixedPadding(cfg.Padding);
         SingleComposer = capi.Gui.CreateCompo("captions", dialogBounds);
         
-        ElementBounds listBounds = ElementBounds.FixedSize(300, 320);
+        ElementBounds listBounds = ElementBounds.FixedSize(
+            cfg.Width*cfg.UIScale+2,
+            cfg.Height*cfg.MaxCaptions*cfg.UIScale+2
+            );
         dialogBounds.WithChild(listBounds);
         captionsList = new CaptionsList(SingleComposer.Api, listBounds);
         SingleComposer.AddInteractiveElement(captionsList, "captionsList");

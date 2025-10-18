@@ -4,8 +4,8 @@ using Vintagestory.API.MathTools;
 using System;
 using System.Collections.Generic;
 using Vintagestory.API.Config;
-using Vintagestory.Client.NoObf;
 using System.Reflection;
+using Vintagestory.API.Common;
 
 namespace ClosedCaptions;
 
@@ -18,8 +18,7 @@ public class CaptionsList : GuiElement
     private TextDrawUtil textUtil;
     private CairoFont font;
     
-    public static readonly int MAX_CAPTIONS = 10;
-    private static readonly int FADE_TIME = 4;
+    private CaptionsConfig cfg => CaptionsModSystem.config;
     
     public class Caption {
         public double age = -1;
@@ -37,17 +36,25 @@ public class CaptionsList : GuiElement
     }
 
     private Queue<ILoadedSound> ActiveSounds;
-    public Caption[] captions = new Caption[MAX_CAPTIONS];
+    public Caption[] captions;
+    private double textHeight; 
     
     public CaptionsList(ICoreClientAPI capi, ElementBounds bounds) : base(capi, bounds) {
         textTexture = new LoadedTexture(capi);
-        // Normalize font size to screen height so GUI looks consistent on all resolutions
-        font = CairoFont.WhiteMediumText().WithFont("Lora").WithFontSize(28f / capi.Render.FrameHeight);
-        imageSurface = new ImageSurface(Format.Argb32, 300, 320);
+        imageSurface = new ImageSurface(
+            Format.Argb32,
+            (int)Math.Round(cfg.Width*cfg.UIScale+2),
+            (int)Math.Round(cfg.Height*cfg.MaxCaptions*cfg.UIScale+2)
+            );
         ctx = genContext(imageSurface);
-        textUtil = new TextDrawUtil();
         
-        for (int i = 0; i < MAX_CAPTIONS; i++) { captions[i] = new Caption(); }
+        font = CairoFont.WhiteMediumText().WithFont("sans-serif").WithFontSize(cfg.FontSize);
+        textUtil = new TextDrawUtil();
+        font.SetupContext(CairoFont.FontMeasuringContext);
+        textHeight = CairoFont.FontMeasuringContext.TextExtents("TEST").Height;
+        
+        captions = new Caption[cfg.MaxCaptions];
+        for (int i = 0; i < cfg.MaxCaptions; i++) { captions[i] = new Caption(); }
 
         FieldInfo field = api.World.GetType().GetField("ActiveSounds", BindingFlags.NonPublic | BindingFlags.Instance);
         ActiveSounds = (Queue<ILoadedSound>)field.GetValue(api.World);
@@ -75,7 +82,7 @@ public class CaptionsList : GuiElement
     private void Update(float deltaTime)
     {
         SyncCaptions();
-        for (var i = 0; i < MAX_CAPTIONS; i++)
+        for (var i = 0; i < cfg.MaxCaptions; i++)
         {
             // Early out if we hit the end of the active sounds.
             if (!captions[i].active) break;
@@ -83,7 +90,7 @@ public class CaptionsList : GuiElement
             captions[i].age += deltaTime;
             
             // Early out if this sound is still young.
-            if (captions[i].age < FADE_TIME) continue;
+            if (captions[i].age < cfg.FadeDuration) continue;
 
             RemoveSound(i);
         }
@@ -100,45 +107,47 @@ public class CaptionsList : GuiElement
 
         foreach (var sound in ActiveSounds)
         {
+            if (!sound.IsPlaying) continue;
             ProcessSound(sound.Params);
         }
     }
 
     private void RemoveSound(int index)
     {
-        for (var j = index; j < MAX_CAPTIONS - 1; j++)
+        for (var j = index; j < cfg.MaxCaptions - 1; j++)
             captions[j] = captions[j + 1];
-        captions[MAX_CAPTIONS - 1] = new Caption();
+        captions[cfg.MaxCaptions - 1] = new Caption();
     }
     
     private void DrawCaptions(Context ctx)
     {
         font.SetupContext(ctx);
-        //ctx.SetSourceRGBA(0, .1, .5, 0.75);
-        //ctx.Rectangle(0, 0, 300, 320);
-        //ctx.Fill();
+        
         ctx.SetSourceRGB(0, 0, 0);
         ctx.Operator = Operator.Clear;
         ctx.Paint();
         ctx.Operator = Operator.Over;
         
-        double y = 32 * MAX_CAPTIONS;
+        double y = cfg.Height * cfg.MaxCaptions;
         var playerPos = api.World.Player.Entity.Pos;
+        
+        var midHeight = cfg.Height / 2;
+        var midWidth = cfg.Width / 2;
+        var arrowHeight = (int)cfg.Height - 8;
+        var arrowWidth = (int)cfg.Height/2 - 2;
         
         foreach (var sound in captions)
         {
             if (!sound.active) continue;
-            y -= 32;
+            y -= cfg.Height;
         
-            var brightness = ((1 - (sound.age / FADE_TIME)) * Math.Max(1, sound.volume) / 2 + 0.5);
+            var brightness = ((1 - (sound.age / cfg.FadeDuration)) * Math.Max(1, sound.volume) / 2 + 0.5);
             
             ctx.SetSourceRGBA(0, 0, 0, 0.25 + (brightness * 0.5));
-            ctx.Rectangle(1, y+1, 298, 30);
+            ctx.Rectangle(2, y+1, cfg.Width-2, cfg.Height-2);
             ctx.Fill();
-            //ctx.Rectangle(0, y, 300, 32);
             ctx.SetSourceRGBA(.25, .25, .25, 0.5 + (brightness * 0.5));
             ctx.LineWidth = 1.0;
-            //ctx.Stroke();
 
             var soundName = sound.name;
             if (soundName.StartsWith("?"))
@@ -148,21 +157,21 @@ public class CaptionsList : GuiElement
             {
                 soundName = soundName.Substring(1);
                 ctx.SetSourceRGB(brightness, brightness * 0.635, brightness * .27);
-                ctx.Rectangle(0, y, 300, 32);
+                ctx.Rectangle(1, y, cfg.Width, cfg.Height);
                 ctx.Stroke();
             }
             else if (soundName.StartsWith("+"))
             {
                 soundName = soundName.Substring(1);
                 ctx.SetSourceRGB(brightness * 0.3, brightness, brightness*0.8);
-                ctx.Rectangle(0, y, 300, 32);
+                ctx.Rectangle(1, y, cfg.Width, cfg.Height);
                 ctx.Stroke();
             }
             else
             {
                 ctx.SetSourceRGB(brightness, brightness, brightness);
             }
-            textUtil.DrawTextLine(ctx, font, soundName, 150 - sound.textWidth / 2, y+3);
+            textUtil.DrawTextLine(ctx, font, soundName, cfg.Width/2 - sound.textWidth/2, y+(cfg.Height-textHeight)/2 - 1);
             
             if (sound.position == null || sound.position.IsZero) continue;
             
@@ -181,39 +190,34 @@ public class CaptionsList : GuiElement
             // BEHIND YOU
             if (Math.Abs(direction) > 6)
             {
-                // d=r*4*(sqrt(2)-1)/3
                 ctx.NewPath();
-                ctx.Arc(26, y+16, 4, 0, GameMath.TWOPI);
+                ctx.Arc(1+cfg.Width*.1-2*cfg.UIScale, y+midHeight, 4*cfg.UIScale, 0, GameMath.TWOPI);
                 ctx.Fill();
                 ctx.NewPath();
-                ctx.Arc(274, y+16, 4, 0, GameMath.TWOPI);
+                ctx.Arc(1+cfg.Width*.9+2*cfg.UIScale, y+midHeight, 4*cfg.UIScale, 0, GameMath.TWOPI);
                 ctx.Fill();
             }
             // >>
             else if (direction > 3)
             {
-                DrawTriangle(ctx, 292, y + 16, 15, 26);
-                DrawTriangle(ctx, 280, y + 16, 15, 26);
-                //textUtil.DrawTextLine(ctx, font, ">>", 270, y+4);
+                DrawTriangle(ctx, 1+Math.Round(cfg.Width*.9+arrowWidth), y+midHeight, arrowWidth, arrowHeight);
+                DrawTriangle(ctx, 1+Math.Round(cfg.Width*.9+arrowWidth*.2), y+midHeight, arrowWidth, arrowHeight);
             }
             // >
             else if (direction > 1)
             {
-                DrawTriangle(ctx, 280, y + 16, 15, 26);
-                //textUtil.DrawTextLine(ctx, font, ">", 270, y+4);
+                DrawTriangle(ctx, 1+Math.Round(cfg.Width*.9+arrowWidth*.2), y+midHeight, arrowWidth, arrowHeight);
             }
             // <<
             else if (direction < -3)
             {
-                DrawTriangle(ctx, 25, y + 16, -15, 26);
-                DrawTriangle(ctx, 13, y + 16, -15, 26);
-                //textUtil.DrawTextLine(ctx, font, "<<", 30, y+4);
+                DrawTriangle(ctx, 1+Math.Round(cfg.Width*.1-arrowWidth), y+midHeight, -arrowWidth, arrowHeight);
+                DrawTriangle(ctx, 1+Math.Round(cfg.Width*.1-arrowWidth*.2), y+midHeight, -arrowWidth, arrowHeight);
             }
             // <
             else if (direction < -1)
             {
-                DrawTriangle(ctx, 25, y + 16, -15, 26);
-                //textUtil.DrawTextLine(ctx, font, "<", 30, y+4);
+                DrawTriangle(ctx, 1+Math.Round(cfg.Width*.1-arrowWidth*.2), y+midHeight, -arrowWidth, arrowHeight);
             }
         }
     }
@@ -311,7 +315,7 @@ public class CaptionsList : GuiElement
         
         // Else, recycle the oldest active slot.
         int oldestSound = 0;
-        for (var i = 1; i < MAX_CAPTIONS; i++)
+        for (var i = 1; i < cfg.MaxCaptions; i++)
         {
             if (captions[i].age > captions[oldestSound].age)
             {
