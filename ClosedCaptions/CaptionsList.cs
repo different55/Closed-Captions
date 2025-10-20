@@ -151,7 +151,7 @@ public class CaptionsList : GuiElement
                 ctx.Rectangle(0, y, 300, 32);
                 ctx.Stroke();
             }
-            else if (soundName.StartsWith("~"))
+            else if (soundName.StartsWith("+"))
             {
                 soundName = soundName.Substring(1);
                 ctx.SetSourceRGB(brightness * 0.3, brightness, brightness*0.8);
