@@ -89,7 +89,7 @@ public class CaptionsList : GuiElement
             captions[i].age += deltaTime;
             
             // Early out if this sound is still young.
-            if (captions[i].age < cfg.FadeDuration) continue;
+            if (captions[i].age < cfg.Duration) continue;
 
             RemoveSound(i);
         }
@@ -139,7 +139,7 @@ public class CaptionsList : GuiElement
             if (!caption.active) continue;
             y -= cfg.Height;
         
-            var brightness = ((1 - (caption.age / cfg.FadeDuration)) * Math.Max(1, caption.volume) / 2 + 0.5);
+            var brightness = ((1 - ((caption.age - cfg.Duration + cfg.FadeDuration) / cfg.FadeDuration)) * Math.Max(1, caption.volume) / 2 + 0.5);
             
             ctx.SetSourceRGBA(0, 0, 0, 0.25 + (brightness * 0.5));
             ctx.Rectangle(2, y+1, cfg.Width-2, cfg.Height-2);
@@ -291,6 +291,7 @@ public class CaptionsList : GuiElement
             {
                 api.Logger.Debug("[Captions] Refreshed: " + name);
                 caption.age = 0;
+                caption.activeSounds++;
                 caption.position = position;
                 caption.volume = volume;
                 return;
