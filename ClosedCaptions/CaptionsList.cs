@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using Vintagestory.API.Config;
 using System.Reflection;
-using Vintagestory.API.Common;
 
 namespace ClosedCaptions;
 
@@ -132,16 +131,15 @@ public class CaptionsList : GuiElement
         var playerPos = api.World.Player.Entity.Pos;
         
         var midHeight = cfg.Height / 2;
-        var midWidth = cfg.Width / 2;
         var arrowHeight = (int)cfg.Height - 8;
         var arrowWidth = (int)cfg.Height/2 - 2;
         
-        foreach (var sound in captions)
+        foreach (var caption in captions)
         {
-            if (!sound.active) continue;
+            if (!caption.active) continue;
             y -= cfg.Height;
         
-            var brightness = ((1 - (sound.age / cfg.FadeDuration)) * Math.Max(1, sound.volume) / 2 + 0.5);
+            var brightness = ((1 - (caption.age / cfg.FadeDuration)) * Math.Max(1, caption.volume) / 2 + 0.5);
             
             ctx.SetSourceRGBA(0, 0, 0, 0.25 + (brightness * 0.5));
             ctx.Rectangle(2, y+1, cfg.Width-2, cfg.Height-2);
@@ -149,7 +147,7 @@ public class CaptionsList : GuiElement
             ctx.SetSourceRGBA(.25, .25, .25, 0.5 + (brightness * 0.5));
             ctx.LineWidth = 1.0;
 
-            var soundName = sound.name;
+            var soundName = caption.name;
             if (soundName.StartsWith("?"))
                 soundName = soundName.Substring(1);
             
@@ -171,12 +169,12 @@ public class CaptionsList : GuiElement
             {
                 ctx.SetSourceRGB(brightness, brightness, brightness);
             }
-            textUtil.DrawTextLine(ctx, font, soundName, cfg.Width/2 - sound.textWidth/2, y+(cfg.Height-textHeight)/2 - 1);
+            textUtil.DrawTextLine(ctx, font, soundName, cfg.Width/2 - caption.textWidth/2, y+(cfg.Height-textHeight)/2 - 1);
             
-            if (sound.position == null || sound.position.IsZero) continue;
+            if (caption.position == null || caption.position.IsZero) continue;
             
-            var dist = sound.position.DistanceTo(playerPos.XYZFloat);
-            var yaw = Math.Atan2(sound.position.Z - playerPos.Z, sound.position.X - playerPos.X);
+            var dist = caption.position.DistanceTo(playerPos.XYZFloat);
+            var yaw = Math.Atan2(caption.position.Z - playerPos.Z, caption.position.X - playerPos.X);
             
             if (dist < 2) continue;
             
@@ -185,7 +183,7 @@ public class CaptionsList : GuiElement
             // ±8 is directly behind the player
             var direction = GameMath.Mod((yaw + api.World.Player.CameraYaw) / GameMath.TWOPI * 16 + 4, 16) - 8;
             
-            api.Logger.Debug("[Captions] Sound: " + sound.name + " direction: " + direction);
+            api.Logger.Debug("[Captions] Sound: " + caption.name + " direction: " + direction);
 
             // BEHIND YOU
             if (Math.Abs(direction) > 6)
@@ -287,29 +285,29 @@ public class CaptionsList : GuiElement
     public void AddSound(string name, Vec3f position, double volume)
     {
         // Refresh existing slot if it's already present. 
-        foreach (var sound in captions)
+        foreach (var caption in captions)
         {
-            if (sound.active && sound.name == name)
+            if (caption.active && caption.name == name)
             {
                 api.Logger.Debug("[Captions] Refreshed: " + name);
-                sound.age = 0;
-                sound.position = position;
-                sound.volume = volume;
+                caption.age = 0;
+                caption.position = position;
+                caption.volume = volume;
                 return;
             }
         }
      
         // Fill an empty slot.
-        foreach (var sound in captions)
+        foreach (var caption in captions)
         {
-            if (sound.active) continue;
+            if (caption.active) continue;
             api.Logger.Debug("[Captions] Added: " + name);
-            sound.age = 0;
-            sound.name = name;
+            caption.age = 0;
+            caption.name = name;
             font.SetupContext(CairoFont.FontMeasuringContext);
-            sound.textWidth = CairoFont.FontMeasuringContext.TextExtents(sound.name).Width;
-            sound.position = position;
-            sound.volume = volume;
+            caption.textWidth = CairoFont.FontMeasuringContext.TextExtents(caption.name).Width;
+            caption.position = position;
+            caption.volume = volume;
             return;
         }
         

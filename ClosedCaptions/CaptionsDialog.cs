@@ -1,4 +1,3 @@
-using HarmonyLib;
 using Vintagestory.API.Client;
 
 namespace ClosedCaptions;
@@ -32,16 +31,7 @@ public class CaptionsDialog : HudElement
     public override string ToggleKeyCombinationCode => null;
     public override double DrawOrder => 0.1999;
     public override bool Focusable => false;
-
     public override bool ShouldReceiveMouseEvents() => false;
-
-    public override bool ShouldReceiveKeyboardEvents()
-    {
-        return false;
-    }
-    
-    public override bool OnEscapePressed()
-    {
-        return false;
-    }
+    public override bool ShouldReceiveKeyboardEvents() => false;
+    public override bool OnEscapePressed() => false;
 }

@@ -2,8 +2,6 @@ using System;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 
-[assembly: ModInfo("Captions")]
-
 namespace ClosedCaptions;
 
 public class CaptionsModSystem : ModSystem
