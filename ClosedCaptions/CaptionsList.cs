@@ -2,7 +2,10 @@ using Vintagestory.API.Client;
 using Cairo;
 using Vintagestory.API.MathTools;
 using System;
+using System.Collections.Generic;
 using Vintagestory.API.Config;
+using Vintagestory.Client.NoObf;
+using System.Reflection;
 
 namespace ClosedCaptions;
 
@@ -14,17 +17,17 @@ public class CaptionsList : GuiElement
     
     private TextDrawUtil textUtil;
     private CairoFont font;
-
-    private static readonly int MAX_SOUNDS = 10;
-    private static readonly int MAX_AGE_SECONDS = 4;
-    private static readonly double RANGE_THRESHOLD = 0.8;
     
-    public class Sound {
+    public static readonly int MAX_CAPTIONS = 10;
+    private static readonly int FADE_TIME = 4;
+    
+    public class Caption {
         public double age = -1;
         public string name;
         public double textWidth;
         public Vec3f position;
         public double volume;
+        public int activeSounds;
 
         public bool active
         {
@@ -32,7 +35,9 @@ public class CaptionsList : GuiElement
             set => age = (value) ? 0 : -1;
         }
     }
-    public Sound[] sounds = new Sound[MAX_SOUNDS];
+
+    private Queue<ILoadedSound> ActiveSounds;
+    public Caption[] captions = new Caption[MAX_CAPTIONS];
     
     public CaptionsList(ICoreClientAPI capi, ElementBounds bounds) : base(capi, bounds) {
         textTexture = new LoadedTexture(capi);
@@ -42,7 +47,10 @@ public class CaptionsList : GuiElement
         ctx = genContext(imageSurface);
         textUtil = new TextDrawUtil();
         
-        for (int i = 0; i < MAX_SOUNDS; i++) { sounds[i] = new Sound(); }
+        for (int i = 0; i < MAX_CAPTIONS; i++) { captions[i] = new Caption(); }
+
+        FieldInfo field = api.World.GetType().GetField("ActiveSounds", BindingFlags.NonPublic | BindingFlags.Instance);
+        ActiveSounds = (Queue<ILoadedSound>)field.GetValue(api.World);
     }
     
     public override void Dispose() {
@@ -64,37 +72,43 @@ public class CaptionsList : GuiElement
         generateTexture(imageSurface, ref textTexture);
         api.Render.Render2DTexturePremultipliedAlpha(textTexture.TextureId, (int)Bounds.renderX, (int)Bounds.renderY, (int)Bounds.InnerWidth, (int)Bounds.InnerHeight);
     }
-    
-    public void Recompose() { 
-        ImageSurface imageSurface = new ImageSurface(Format.Argb32, 300, 320); 
-        Context context = genContext(imageSurface); 
-        DrawCaptions(context); 
-        generateTexture(imageSurface, ref textTexture); 
-        context.Dispose(); 
-        imageSurface.Dispose();
-    }
-    
-    private void Update(float deltaTime) 
+    private void Update(float deltaTime)
     {
-        for (var i = 0; i < MAX_SOUNDS; i++)
+        SyncCaptions();
+        for (var i = 0; i < MAX_CAPTIONS; i++)
         {
             // Early out if we hit the end of the active sounds.
-            if (!sounds[i].active) break;
+            if (!captions[i].active) break;
             
-            sounds[i].age += deltaTime;
+            captions[i].age += deltaTime;
             
             // Early out if this sound is still young.
-            if (sounds[i].age < MAX_AGE_SECONDS) continue;
+            if (captions[i].age < FADE_TIME) continue;
 
             RemoveSound(i);
+        }
+    }
+    
+    // TODO CLEAR TEXTURE BEFOREHAND.
+
+    // Syncronizes the internal caption list with the currently playing ActiveSounds.
+    private void SyncCaptions()
+    {
+        // Reset the activeSound count.
+        foreach (var caption in captions)
+            caption.activeSounds = 0;
+
+        foreach (var sound in ActiveSounds)
+        {
+            ProcessSound(sound.Params);
         }
     }
 
     private void RemoveSound(int index)
     {
-        for (var j = index; j < MAX_SOUNDS - 1; j++)
-            sounds[j] = sounds[j + 1];
-        sounds[MAX_SOUNDS - 1] = new Sound();
+        for (var j = index; j < MAX_CAPTIONS - 1; j++)
+            captions[j] = captions[j + 1];
+        captions[MAX_CAPTIONS - 1] = new Caption();
     }
     
     private void DrawCaptions(Context ctx)
@@ -108,15 +122,15 @@ public class CaptionsList : GuiElement
         ctx.Paint();
         ctx.Operator = Operator.Over;
         
-        double y = 32 * MAX_SOUNDS;
+        double y = 32 * MAX_CAPTIONS;
         var playerPos = api.World.Player.Entity.Pos;
         
-        foreach (var sound in sounds)
+        foreach (var sound in captions)
         {
             if (!sound.active) continue;
             y -= 32;
         
-            var brightness = ((1 - (sound.age / MAX_AGE_SECONDS)) * Math.Max(1, sound.volume) / 2 + 0.5);
+            var brightness = ((1 - (sound.age / FADE_TIME)) * Math.Max(1, sound.volume) / 2 + 0.5);
             
             ctx.SetSourceRGBA(0, 0, 0, 0.25 + (brightness * 0.5));
             ctx.Rectangle(1, y+1, 298, 30);
@@ -254,12 +268,12 @@ public class CaptionsList : GuiElement
         var dist = Math.Sqrt(dx * dx + dy * dy + dz * dz);
         
         // Ignore sounds that are out of range.
-        if (dist > sound.Range * RANGE_THRESHOLD) return;
+        if (dist > sound.Range) return;
         
         api.Logger.Debug("[Captions] Blessed: " + name);
         
         AddSound(name, sound.Position, sound.Volume);
-        foreach (var s in sounds)
+        foreach (var s in captions)
         {
             if (!s.active) continue;
             api.Logger.Debug($"[Captions] Active: {s.name} age={s.age:0.00}s");
@@ -269,7 +283,7 @@ public class CaptionsList : GuiElement
     public void AddSound(string name, Vec3f position, double volume)
     {
         // Refresh existing slot if it's already present. 
-        foreach (var sound in sounds)
+        foreach (var sound in captions)
         {
             if (sound.active && sound.name == name)
             {
@@ -282,7 +296,7 @@ public class CaptionsList : GuiElement
         }
      
         // Fill an empty slot.
-        foreach (var sound in sounds)
+        foreach (var sound in captions)
         {
             if (sound.active) continue;
             api.Logger.Debug("[Captions] Added: " + name);
@@ -297,14 +311,14 @@ public class CaptionsList : GuiElement
         
         // Else, recycle the oldest active slot.
         int oldestSound = 0;
-        for (var i = 1; i < MAX_SOUNDS; i++)
+        for (var i = 1; i < MAX_CAPTIONS; i++)
         {
-            if (sounds[i].age > sounds[oldestSound].age)
+            if (captions[i].age > captions[oldestSound].age)
             {
                 oldestSound = i;
             }
         }
-        api.Logger.Debug("[Captions] Recycled: " + sounds[oldestSound].name + " -> " + name);
+        api.Logger.Debug("[Captions] Recycled: " + captions[oldestSound].name + " -> " + name);
         RemoveSound(oldestSound);
         AddSound(name, position, volume);
     }
