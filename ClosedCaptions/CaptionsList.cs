@@ -36,7 +36,7 @@ public class CaptionsList : GuiElement
 
     private Queue<ILoadedSound> ActiveSounds;
     public Caption[] captions;
-    private double textHeight; 
+    private TextExtents fontMetrics;
     
     public CaptionsList(ICoreClientAPI capi, ElementBounds bounds) : base(capi, bounds) {
         textTexture = new LoadedTexture(capi);
@@ -49,8 +49,7 @@ public class CaptionsList : GuiElement
         
         font = CairoFont.WhiteMediumText().WithFont(cfg.Font).WithFontSize(cfg.FontSize);
         textUtil = new TextDrawUtil();
-        font.SetupContext(CairoFont.FontMeasuringContext);
-        textHeight = CairoFont.FontMeasuringContext.TextExtents("TEST").Height;
+        fontMetrics = font.GetTextExtents("Waves Crash");
         
         captions = new Caption[cfg.MaxCaptions];
         for (int i = 0; i < cfg.MaxCaptions; i++) { captions[i] = new Caption(); }
@@ -155,21 +154,25 @@ public class CaptionsList : GuiElement
             {
                 soundName = soundName.Substring(1);
                 ctx.SetSourceRGB(brightness, brightness * 0.635, brightness * .27);
-                ctx.Rectangle(1, y, cfg.Width, cfg.Height);
+                ctx.Rectangle(1, y, cfg.Width-2, cfg.Height);
                 ctx.Stroke();
             }
             else if (soundName.StartsWith("+"))
             {
                 soundName = soundName.Substring(1);
                 ctx.SetSourceRGB(brightness * 0.3, brightness, brightness*0.8);
-                ctx.Rectangle(1, y, cfg.Width, cfg.Height);
+                ctx.Rectangle(1, y, cfg.Width-2, cfg.Height);
                 ctx.Stroke();
             }
             else
             {
                 ctx.SetSourceRGB(brightness, brightness, brightness);
             }
-            textUtil.DrawTextLine(ctx, font, soundName, cfg.Width/2 - caption.textWidth/2, y+(cfg.Height-textHeight)/2 - 1);
+            ctx.MoveTo(cfg.Width/2 - (caption.textWidth/2), y + midHeight + (fontMetrics.Height/2 - (fontMetrics.Height + fontMetrics.YBearing)));
+            ctx.ShowText(soundName);
+            //textUtil.DrawTextLine(ctx, font, soundName, cfg.Width/2 - caption.textWidth/2, y);
+            //ctx.Rectangle(20, y, cfg.Width-40, fontMetrics.Height);
+            ctx.Stroke();
             
             if (caption.position == null || caption.position.IsZero) continue;
             
@@ -182,8 +185,6 @@ public class CaptionsList : GuiElement
             // ±4 is directly left/right of the player, respectively
             // ±8 is directly behind the player
             var direction = GameMath.Mod((yaw + api.World.Player.CameraYaw) / GameMath.TWOPI * 16 + 4, 16) - 8;
-            
-            api.Logger.Debug("[Captions] Sound: " + caption.name + " direction: " + direction);
 
             // BEHIND YOU
             if (Math.Abs(direction) > 6)
@@ -232,7 +233,6 @@ public class CaptionsList : GuiElement
 
     public void ProcessSound(SoundParams sound)
     {
-        api.Logger.Debug("[Captions] Sound: " + sound.Location.Path);
         // Unknown condition yoinked without understanding from SubtitlesMod
         var player = api.World.Player;
         if (player == null) return;
@@ -254,8 +254,6 @@ public class CaptionsList : GuiElement
         // Unnamed sounds
         if (name == null) name = id;
         
-        api.Logger.Debug("[Captions] Sound name: " + name);
-        
         var position = sound.Position;
         if (position == null || position.IsZero)
         {
@@ -272,14 +270,7 @@ public class CaptionsList : GuiElement
         // Ignore sounds that are out of range.
         if (dist > sound.Range) return;
         
-        api.Logger.Debug("[Captions] Blessed: " + name);
-        
         AddSound(name, sound.Position, sound.Volume);
-        foreach (var s in captions)
-        {
-            if (!s.active) continue;
-            api.Logger.Debug($"[Captions] Active: {s.name} age={s.age:0.00}s");
-        }
     }
     
     public void AddSound(string name, Vec3f position, double volume)
@@ -289,7 +280,6 @@ public class CaptionsList : GuiElement
         {
             if (caption.active && caption.name == name)
             {
-                api.Logger.Debug("[Captions] Refreshed: " + name);
                 caption.age = 0;
                 caption.activeSounds++;
                 caption.position = position;
@@ -302,11 +292,9 @@ public class CaptionsList : GuiElement
         foreach (var caption in captions)
         {
             if (caption.active) continue;
-            api.Logger.Debug("[Captions] Added: " + name);
             caption.age = 0;
             caption.name = name;
-            font.SetupContext(CairoFont.FontMeasuringContext);
-            caption.textWidth = CairoFont.FontMeasuringContext.TextExtents(caption.name).Width;
+            caption.textWidth = font.GetTextExtents(caption.name).Width;
             caption.position = position;
             caption.volume = volume;
             return;
@@ -321,7 +309,6 @@ public class CaptionsList : GuiElement
                 oldestSound = i;
             }
         }
-        api.Logger.Debug("[Captions] Recycled: " + captions[oldestSound].name + " -> " + name);
         RemoveSound(oldestSound);
         AddSound(name, position, volume);
     }
