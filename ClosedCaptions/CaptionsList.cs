@@ -48,7 +48,7 @@ public class CaptionsList : GuiElement
             );
         ctx = genContext(imageSurface);
         
-        font = CairoFont.WhiteMediumText().WithFont("sans-serif").WithFontSize(cfg.FontSize);
+        font = CairoFont.WhiteMediumText().WithFont(cfg.Font).WithFontSize(cfg.FontSize);
         textUtil = new TextDrawUtil();
         font.SetupContext(CairoFont.FontMeasuringContext);
         textHeight = CairoFont.FontMeasuringContext.TextExtents("TEST").Height;
