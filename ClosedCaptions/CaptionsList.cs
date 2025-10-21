@@ -215,10 +215,10 @@ public class CaptionsList : GuiElement
             if (Math.Abs(direction) > 6)
             {
                 ctx.NewPath();
-                ctx.Arc(1+cfg.Width*.1-2, y+midHeight, cfg.Height/8, 0, GameMath.TWOPI);
+                ctx.Arc(1+cfg.Width*.1, y+midHeight, cfg.Height/8, 0, GameMath.TWOPI);
                 ctx.Fill();
                 ctx.NewPath();
-                ctx.Arc(1+cfg.Width*.9+2, y+midHeight, cfg.Height/8, 0, GameMath.TWOPI);
+                ctx.Arc(1+cfg.Width*.9, y+midHeight, cfg.Height/8, 0, GameMath.TWOPI);
                 ctx.Fill();
             }
             // >>
@@ -230,7 +230,7 @@ public class CaptionsList : GuiElement
             // >
             else if (direction > 1)
             {
-                DrawTriangle(ctx, 1+Math.Round(cfg.Width*.9+arrowWidth*.2), y+midHeight, arrowWidth, arrowHeight);
+                DrawTriangle(ctx, 1+Math.Round(cfg.Width*.9+arrowWidth*55), y+midHeight, arrowWidth, arrowHeight);
             }
             // <<
             else if (direction < -3)
@@ -241,7 +241,7 @@ public class CaptionsList : GuiElement
             // <
             else if (direction < -1)
             {
-                DrawTriangle(ctx, 1+Math.Round(cfg.Width*.1-arrowWidth*.2), y+midHeight, -arrowWidth, arrowHeight);
+                DrawTriangle(ctx, 1+Math.Round(cfg.Width*.1-arrowWidth*.55), y+midHeight, -arrowWidth, arrowHeight);
             }
         }
     }
