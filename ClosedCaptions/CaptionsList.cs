@@ -180,7 +180,11 @@ public class CaptionsList : GuiElement
             var dist = caption.position.DistanceTo(playerPos.XYZFloat);
             var yaw = Math.Atan2(caption.position.Z - playerPos.Z, caption.position.X - playerPos.X);
             
+            // Ignore sounds that are too close.
             if (dist < 2) continue;
+
+            // Ignore directionality for overlapping sounds.
+            if (caption.activeSounds > 1) continue;
             
             // 0 is directly in front of the player
             // ±4 is directly left/right of the player, respectively
