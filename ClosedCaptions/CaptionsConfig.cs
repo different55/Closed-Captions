@@ -7,6 +7,10 @@ namespace ClosedCaptions;
 public class CaptionsConfig
 {
     public bool Enabled = true;
+    [Description("Add symbols in addition to color to indicate warnings/notices.")]
+    public bool ShowSymbols = false;
+    [Description("Make warnings use a bright background with dark text.")]
+    public bool InvertedWarnings = false;
     [Description("How long to persist captions after the sound stops.")]
     [Range(0, 10)]
     public float Duration = 4.0f;

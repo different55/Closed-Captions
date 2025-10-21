@@ -3,6 +3,7 @@ using Cairo;
 using Vintagestory.API.MathTools;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using Vintagestory.API.Config;
 using System.Reflection;
 
@@ -23,6 +24,9 @@ public class CaptionsList : GuiElement
         cfg.Position == EnumDialogArea.CenterBottom ||
         cfg.Position == EnumDialogArea.RightBottom ||
         cfg.Position == EnumDialogArea.FixedBottom;
+
+    private Color warning;
+    private Color notice;
     
     public class Caption {
         public double age = -1;
@@ -60,6 +64,9 @@ public class CaptionsList : GuiElement
 
         FieldInfo field = api.World.GetType().GetField("ActiveSounds", BindingFlags.NonPublic | BindingFlags.Instance);
         ActiveSounds = (Queue<ILoadedSound>)field.GetValue(api.World);
+        
+        warning = new Color(cfg.WarningRed, cfg.WarningGreen, cfg.WarningBlue);
+        notice = new Color(cfg.NoticeRed, cfg.NoticeGreen, cfg.NoticeBlue);
     }
     
     public override void Dispose() {
@@ -97,10 +104,8 @@ public class CaptionsList : GuiElement
             RemoveSound(i);
         }
     }
-    
-    // TODO CLEAR TEXTURE BEFOREHAND.
 
-    // Syncronizes the internal caption list with the currently playing ActiveSounds.
+    // Synchronizes the internal caption list with the currently playing ActiveSounds.
     private void SyncCaptions()
     {
         // Reset the activeSound count.
@@ -143,35 +148,50 @@ public class CaptionsList : GuiElement
             y -= (GrowUp) ? cfg.Height : -cfg.Height;
         
             var brightness = ((1 - ((caption.age - cfg.Duration + cfg.FadeDuration) / cfg.FadeDuration)) * Math.Max(1, caption.volume) / 2 + 0.5);
+
+            var bg = new Color(0, 0, 0, 1);
+            var fg = new Color(1, 1, 1, 1);
+            var stroke = new Color(0.25, 0.25, 0.25, 1);
+            var bgBrightness = (cfg.BackgroundOpacity * 0.3333) + (brightness * cfg.BackgroundOpacity * 0.6667);
+            var fgBrightness = (cfg.TextOpacity * 0.5) + (brightness * cfg.TextOpacity * 0.5);
+
+            // Get display name, stripping special characters and adding indicators if ShowSymbols is enabled.
+            var soundName = GetDisplayName(caption.name);
             
-            ctx.SetSourceRGBA(0, 0, 0, cfg.BackgroundOpacity * 0.3333 + (brightness * cfg.BackgroundOpacity * 0.6667));
+            // Modify colors for special sound types.
+            if (caption.name.StartsWith("!"))
+            {
+                fg = warning;
+                stroke = warning;
+                if (cfg.InvertedWarnings)
+                {
+                    fg = bg;
+                    stroke = bg;
+                    bg = warning;
+                }
+            }
+            else if (caption.name.StartsWith("+"))
+            {
+                fg = notice;
+                stroke = notice;
+            }
+            
+            // Set alpha values.
+            bg.A = bgBrightness;
+            fg.A = fgBrightness;
+            stroke.A = fg.A;
+            
+            // Draw background
+            ctx.SetSourceColor(bg);
             ctx.Rectangle(2, y+1, cfg.Width-2, cfg.Height-2);
             ctx.Fill();
-            ctx.SetSourceRGBA(.25, .25, .25, cfg.BackgroundOpacity * 0.5 + (brightness * cfg.BackgroundOpacity * 0.5));
+            // Draw stroke
+            ctx.SetSourceColor(stroke);
+            ctx.Rectangle(2, y+1, cfg.Width-2, cfg.Height-2);
             ctx.LineWidth = 1.0;
-
-            var soundName = caption.name;
-            if (soundName.StartsWith("?"))
-                soundName = soundName.Substring(1);
-            
-            if (soundName.StartsWith("!"))
-            {
-                soundName = soundName.Substring(1);
-                ctx.SetSourceRGB(cfg.WarningRed * brightness, cfg.WarningGreen * brightness * 0.635, cfg.WarningBlue * brightness * .27);
-                ctx.Rectangle(1, y, cfg.Width-2, cfg.Height);
-                ctx.Stroke();
-            }
-            else if (soundName.StartsWith("+"))
-            {
-                soundName = soundName.Substring(1);
-                ctx.SetSourceRGB(cfg.NoticeRed * brightness, cfg.NoticeGreen * brightness, cfg.NoticeBlue * brightness);
-                ctx.Rectangle(1, y, cfg.Width-2, cfg.Height);
-                ctx.Stroke();
-            }
-            else
-            {
-                ctx.SetSourceRGB(brightness, brightness, brightness);
-            }
+            ctx.Stroke();
+            // Draw text
+            ctx.SetSourceColor(fg);
             ctx.MoveTo(cfg.Width/2 - (caption.textWidth/2), y + midHeight + (fontMetrics.Height/2 - (fontMetrics.Height + fontMetrics.YBearing)));
             ctx.ShowText(soundName);
             
@@ -224,6 +244,27 @@ public class CaptionsList : GuiElement
                 DrawTriangle(ctx, 1+Math.Round(cfg.Width*.1-arrowWidth*.2), y+midHeight, -arrowWidth, arrowHeight);
             }
         }
+    }
+
+    private string GetDisplayName(string soundName)
+    {
+        if (soundName.StartsWith("?"))
+        {
+            soundName = soundName.Substring(1);
+        }
+        if (soundName.StartsWith("!"))
+        {
+            soundName = soundName.Substring(1);
+            if (cfg.ShowSymbols)
+                soundName = "! " + soundName + " !";
+        }
+        else if (soundName.StartsWith("+"))
+        {
+            soundName = soundName.Substring(1);
+            if (cfg.ShowSymbols)
+                soundName = "+ " + soundName + " +";
+        }
+        return soundName;
     }
 
     public void DrawTriangle(Context ctx, double x, double y, double w, double h)
@@ -299,7 +340,7 @@ public class CaptionsList : GuiElement
             if (caption.active) continue;
             caption.age = 0;
             caption.name = name;
-            caption.textWidth = font.GetTextExtents(caption.name).Width;
+            caption.textWidth = font.GetTextExtents(GetDisplayName(caption.name)).Width;
             caption.position = position;
             caption.volume = volume;
             return;
