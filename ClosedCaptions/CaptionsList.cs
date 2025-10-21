@@ -144,10 +144,10 @@ public class CaptionsList : GuiElement
         
             var brightness = ((1 - ((caption.age - cfg.Duration + cfg.FadeDuration) / cfg.FadeDuration)) * Math.Max(1, caption.volume) / 2 + 0.5);
             
-            ctx.SetSourceRGBA(0, 0, 0, 0.25 + (brightness * 0.5));
+            ctx.SetSourceRGBA(0, 0, 0, cfg.BackgroundOpacity * 0.3333 + (brightness * cfg.BackgroundOpacity * 0.6667));
             ctx.Rectangle(2, y+1, cfg.Width-2, cfg.Height-2);
             ctx.Fill();
-            ctx.SetSourceRGBA(.25, .25, .25, 0.5 + (brightness * 0.5));
+            ctx.SetSourceRGBA(.25, .25, .25, cfg.BackgroundOpacity * 0.5 + (brightness * cfg.BackgroundOpacity * 0.5));
             ctx.LineWidth = 1.0;
 
             var soundName = caption.name;
@@ -157,14 +157,14 @@ public class CaptionsList : GuiElement
             if (soundName.StartsWith("!"))
             {
                 soundName = soundName.Substring(1);
-                ctx.SetSourceRGB(brightness, brightness * 0.635, brightness * .27);
+                ctx.SetSourceRGB(cfg.WarningRed * brightness, cfg.WarningGreen * brightness * 0.635, cfg.WarningBlue * brightness * .27);
                 ctx.Rectangle(1, y, cfg.Width-2, cfg.Height);
                 ctx.Stroke();
             }
             else if (soundName.StartsWith("+"))
             {
                 soundName = soundName.Substring(1);
-                ctx.SetSourceRGB(brightness * 0.3, brightness, brightness*0.8);
+                ctx.SetSourceRGB(cfg.NoticeRed * brightness, cfg.NoticeGreen * brightness, cfg.NoticeBlue * brightness);
                 ctx.Rectangle(1, y, cfg.Width-2, cfg.Height);
                 ctx.Stroke();
             }

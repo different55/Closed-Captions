@@ -38,6 +38,32 @@ public class CaptionsConfig
     [Category("Font")]
     [Range(8, 64)]
     public float FontSize = 28;
+    [Description("How transparent the caption background should be.")]
+    [Category("Style")]
+    [Range(0, 1)]
+    public double BackgroundOpacity = 0.75;
+    [Description("How transparent the caption text should be.")]
+    [Category("Style")]
+    [Range(0, 1)]
+    public double TextOpacity = 1.0;
+    [Category("Style")]
+    [Range(0, 1)]
+    public double WarningRed = 1.0;
+    [Category("Style")]
+    [Range(0, 1)]
+    public double WarningGreen = 0.635;
+    [Category("Style")]
+    [Range(0, 1)]
+    public double WarningBlue = 0.27;
+    [Category("Style")]
+    [Range(0, 1)]
+    public double NoticeRed = 0.3;
+    [Category("Style")]
+    [Range(0, 1)]
+    public double NoticeGreen = 1.0;
+    [Category("Style")]
+    [Range(0, 1)]
+    public double NoticeBlue = 0.8;
     [DisplayName("Reload Captions (Save First)")]
     [Browsable(true)]
     [Description("Reload captions with updated settings (hit Save first!)")]
