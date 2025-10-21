@@ -6,7 +6,7 @@
         "Diff"
     ],
     "description": "Add closed captions for sound effects.",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "dependencies": {
         "game": ""
     }
