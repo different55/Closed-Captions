@@ -18,6 +18,11 @@ public class CaptionsList : GuiElement
     private CairoFont font;
     
     private CaptionsConfig cfg => CaptionsModSystem.config;
+    private bool GrowUp => 
+        cfg.Position == EnumDialogArea.LeftBottom ||
+        cfg.Position == EnumDialogArea.CenterBottom ||
+        cfg.Position == EnumDialogArea.RightBottom ||
+        cfg.Position == EnumDialogArea.FixedBottom;
     
     public class Caption {
         public double age = -1;
@@ -30,7 +35,6 @@ public class CaptionsList : GuiElement
         public bool active
         {
             get => age >= 0;
-            set => age = (value) ? 0 : -1;
         }
     }
 
@@ -42,8 +46,8 @@ public class CaptionsList : GuiElement
         textTexture = new LoadedTexture(capi);
         imageSurface = new ImageSurface(
             Format.Argb32,
-            (int)Math.Round(cfg.Width*cfg.UIScale+2),
-            (int)Math.Round(cfg.Height*cfg.MaxCaptions*cfg.UIScale+2)
+            cfg.Width+2,
+            cfg.Height*cfg.MaxCaptions+2
             );
         ctx = genContext(imageSurface);
         
@@ -126,7 +130,7 @@ public class CaptionsList : GuiElement
         ctx.Paint();
         ctx.Operator = Operator.Over;
         
-        double y = cfg.Height * cfg.MaxCaptions;
+        double y = (GrowUp) ? cfg.Height * cfg.MaxCaptions : -cfg.Height;
         var playerPos = api.World.Player.Entity.Pos;
         
         var midHeight = cfg.Height / 2;
@@ -136,7 +140,7 @@ public class CaptionsList : GuiElement
         foreach (var caption in captions)
         {
             if (!caption.active) continue;
-            y -= cfg.Height;
+            y -= (GrowUp) ? cfg.Height : -cfg.Height;
         
             var brightness = ((1 - ((caption.age - cfg.Duration + cfg.FadeDuration) / cfg.FadeDuration)) * Math.Max(1, caption.volume) / 2 + 0.5);
             
@@ -170,9 +174,6 @@ public class CaptionsList : GuiElement
             }
             ctx.MoveTo(cfg.Width/2 - (caption.textWidth/2), y + midHeight + (fontMetrics.Height/2 - (fontMetrics.Height + fontMetrics.YBearing)));
             ctx.ShowText(soundName);
-            //textUtil.DrawTextLine(ctx, font, soundName, cfg.Width/2 - caption.textWidth/2, y);
-            //ctx.Rectangle(20, y, cfg.Width-40, fontMetrics.Height);
-            ctx.Stroke();
             
             if (caption.position == null || caption.position.IsZero) continue;
             
@@ -190,10 +191,10 @@ public class CaptionsList : GuiElement
             if (Math.Abs(direction) > 6)
             {
                 ctx.NewPath();
-                ctx.Arc(1+cfg.Width*.1-2*cfg.UIScale, y+midHeight, 4*cfg.UIScale, 0, GameMath.TWOPI);
+                ctx.Arc(1+cfg.Width*.1-2, y+midHeight, cfg.Height/8, 0, GameMath.TWOPI);
                 ctx.Fill();
                 ctx.NewPath();
-                ctx.Arc(1+cfg.Width*.9+2*cfg.UIScale, y+midHeight, 4*cfg.UIScale, 0, GameMath.TWOPI);
+                ctx.Arc(1+cfg.Width*.9+2, y+midHeight, cfg.Height/8, 0, GameMath.TWOPI);
                 ctx.Fill();
             }
             // >>

@@ -10,16 +10,16 @@ public class CaptionsDialog : HudElement
     {
         var cfg = CaptionsModSystem.config;
         ElementBounds dialogBounds = ElementBounds.FixedSize(
-            cfg.Width*cfg.UIScale+2,
-            cfg.Height*cfg.MaxCaptions*cfg.UIScale+2
+            cfg.Width+2,
+            cfg.Height*cfg.MaxCaptions+2
             )
             .WithAlignment(cfg.Position)
             .WithFixedPadding(cfg.Padding);
         SingleComposer = capi.Gui.CreateCompo("captions", dialogBounds);
         
         ElementBounds listBounds = ElementBounds.FixedSize(
-            cfg.Width*cfg.UIScale+2,
-            cfg.Height*cfg.MaxCaptions*cfg.UIScale+2
+            cfg.Width+2,
+            cfg.Height*cfg.MaxCaptions+2
             );
         dialogBounds.WithChild(listBounds);
         captionsList = new CaptionsList(SingleComposer.Api, listBounds);

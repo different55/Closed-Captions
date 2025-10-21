@@ -6,14 +6,14 @@ namespace ClosedCaptions;
 
 public class CaptionsModSystem : ModSystem
 {
-    public CaptionsDialog dialog;
+    private static CaptionsDialog dialog;
     public static CaptionsConfig config;
-    private ICoreClientAPI api;
+    private static ICoreClientAPI api;
     
-    public override void StartClientSide(ICoreClientAPI api)
+    public override void StartClientSide(ICoreClientAPI capi)
     {
-        base.StartClientSide(api);
-        this.api = api;
+        base.StartClientSide(capi);
+        api = capi;
         LoadConfig();
         
         if (!config.Enabled) return;
@@ -25,7 +25,7 @@ public class CaptionsModSystem : ModSystem
         };
     }
     
-    private void LoadConfig()
+    private static void LoadConfig()
     {
         try
         {
@@ -38,15 +38,17 @@ public class CaptionsModSystem : ModSystem
         }
         catch (Exception e)
         {
-            Mod.Logger.Error("Could not load config, using defaults.");
-            Mod.Logger.Error(e.ToString());
+            api.Logger.Error("Could not load config, using defaults.");
+            api.Logger.Error(e.ToString());
             config = new CaptionsConfig();
         }
     }
 
-    public void Reload()
+    public static void Reload()
     {
         dialog?.TryClose();
+        LoadConfig();
+        if (!config.Enabled) return;
         dialog = new CaptionsDialog(api);
         dialog.TryOpen();
     }

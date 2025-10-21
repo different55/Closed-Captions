@@ -1,53 +1,46 @@
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using Vintagestory.API.Client;
 
 namespace ClosedCaptions;
 
 public class CaptionsConfig
 {
-    /// <summary>
-    ///  Enable or disable closed captions.
-    /// </summary>
     public bool Enabled = true;
-    /// <summary>
-    ///  Set how long captions are displayed after the sound stops, in seconds.
-    ///  TODO: Do.
-    /// </summary>
+    [Description("How long to persist captions after the sound stops.")]
+    [Range(0, 10)]
     public float Duration = 4.0f;
-    /// <summary>
-    ///  Set how long captions take to fade out, in seconds.
-    /// </summary>
+    [Description("How long it takes for captions to fade out.")]
+    [Range(0, 4)]
     public float FadeDuration = 1.0f;
-    /// <summary>
-    ///  Set the scale of the captions UI independent of the global UI scale.
-    ///  TODO: Implement using RuntimeEnv.
-    /// </summary>
-    public float UIScale = 1.0f;
-    /// <summary>
-    ///  Set the position of the captions on the screen.
-    /// </summary>
-    public EnumDialogArea Position = EnumDialogArea.RightBottom;
-    /// <summary>
-    ///  Set the maximum number of captions to display at once.
-    /// </summary>
+    [Description("Set the maximum number of captions to display at once.")]
+    [Range(1, 30)]
     public int MaxCaptions = 10;
-    /// <summary>
-    ///  Set the width of the captions box in pixels.
-    /// </summary>
-    public double Width = 300;
-    /// <summary>
-    ///  Set the height of each caption in pixels.
-    /// </summary>
-    public double Height = 34;
-    /// <summary>
-    ///  Set the padding between the captions box and the screen edges in pixels.
-    /// </summary>
+    [Description("Set the position of the captions on the screen.")]
+    [Category("Position/Size")]
+    public EnumDialogArea Position = EnumDialogArea.RightBottom;
+    [Description("Set the width of the captions box in pixels.")]
+    [Category("Position/Size")]
+    [Range(256, 512)]
+    public int Width = 300;
+    [Description("Set the height of each caption line in pixels.")]
+    [Category("Position/Size")]
+    [Range(16, 64)]
+    public int Height = 34;
+    [Description("Set the padding between the captions box and the screen edges in pixels.")]
+    [Category("Position/Size")]
+    [Range(0, 64)]
     public double Padding = 16;
-    /// <summary>
-    ///  Set the font used for captions.
-    /// </summary>
+    [Description("Set the font name.")]
+    [Category("Font")]
     public string Font = "Lora";
-    /// <summary>
-    ///  Set the font size used for captions.
-    /// </summary>
+    [Description("Set the font size.")]
+    [Category("Font")]
+    [Range(8, 64)]
     public float FontSize = 28;
+    [DisplayName("Reload Captions (Save First)")]
+    [Browsable(true)]
+    [Description("Reload captions with updated settings (hit Save first!)")]
+    [Category("Actions")]
+    public static void ReloadCaptions() => CaptionsModSystem.Reload();
 }
