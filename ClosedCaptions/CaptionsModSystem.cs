@@ -8,23 +8,24 @@ public class CaptionsModSystem : ModSystem
 {
     public CaptionsDialog dialog;
     public static CaptionsConfig config;
+    private ICoreClientAPI api;
     
     public override void StartClientSide(ICoreClientAPI api)
     {
         base.StartClientSide(api);
-        LoadConfig(api);
+        this.api = api;
+        LoadConfig();
         
         if (!config.Enabled) return;
         
         api.Event.IsPlayerReady += (ref EnumHandling handling) =>
         {
-            dialog = new CaptionsDialog(api);
-            dialog.TryOpen();
+            Reload();
             return true;
         };
     }
     
-    private void LoadConfig(ICoreAPI api)
+    private void LoadConfig()
     {
         try
         {
@@ -41,5 +42,12 @@ public class CaptionsModSystem : ModSystem
             Mod.Logger.Error(e.ToString());
             config = new CaptionsConfig();
         }
+    }
+
+    public void Reload()
+    {
+        dialog?.TryClose();
+        dialog = new CaptionsDialog(api);
+        dialog.TryOpen();
     }
 }
