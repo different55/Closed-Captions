@@ -45,6 +45,8 @@ public class CaptionsList : GuiElement
     public Caption[] captions;
     private TextExtents fontMetrics;
     
+    private const double AudibilityThreshold = 0.1;
+    
     public CaptionsList(ICoreClientAPI capi, ElementBounds bounds) : base(capi, bounds) {
         textTexture = new LoadedTexture(capi);
         imageSurface = new ImageSurface(
@@ -301,7 +303,8 @@ public class CaptionsList : GuiElement
         var position = sound.Position;
         if (position == null || position.IsZero)
         {
-            AddSound(name, null, sound.Volume);
+            if (sound.Volume > AudibilityThreshold)
+                AddSound(name, null, sound.Volume);
             return;
         }
 
@@ -313,6 +316,13 @@ public class CaptionsList : GuiElement
         
         // Ignore sounds that are out of range.
         if (dist > sound.Range) return;
+        
+        // Ignore sounds that are out of earshot.
+        if (!sound.Location.ToString().StartsWith("captions:weather/wind")) return;
+        if ((1 - (dist / sound.Range)) * sound.Volume < AudibilityThreshold) {api.Logger.Debug("[CAPTIONS] {0} out of earshot, distance: {1}, range: {2}, volume: {3}, factor: {4}", sound.Location, dist, sound.Range, sound.Volume, (1 - (dist / sound.Range)) * sound.Volume);
+            return;
+        }
+        else api.Logger.Debug("[CAPTIONS] {0} in earshot, distance: {1}, range: {2}, volume: {3}, factor: {4}", sound.Location, dist, sound.Range, sound.Volume, (1 - (dist / sound.Range)) * sound.Volume);
         
         AddSound(name, sound.Position, sound.Volume);
     }
