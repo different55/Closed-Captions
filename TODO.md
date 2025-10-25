@@ -1,6 +1,5 @@
 * Font Weight
 * CRASH: when resizing window
-* BUG: The single right arrow never spawns
 * We need a threshold cutoff for volume cause it's always Distant Thunder somewhere
 
 Notes:

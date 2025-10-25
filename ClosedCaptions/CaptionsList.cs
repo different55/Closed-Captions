@@ -208,7 +208,7 @@ public class CaptionsList : GuiElement
             // ±4 is directly left/right of the player, respectively
             // ±8 is directly behind the player
             var direction = GameMath.Mod((yaw + api.World.Player.CameraYaw) / GameMath.TWOPI * 16 + 4, 16) - 8;
-
+            
             // BEHIND YOU
             if (Math.Abs(direction) > 6)
             {
@@ -228,7 +228,7 @@ public class CaptionsList : GuiElement
             // >
             else if (direction > 1)
             {
-                DrawTriangle(ctx, 1+Math.Round(cfg.Width*.9+arrowWidth*55), y+midHeight, arrowWidth, arrowHeight);
+                DrawTriangle(ctx, 1+Math.Round(cfg.Width*.9+arrowWidth*.2), y+midHeight, arrowWidth, arrowHeight);
             }
             // <<
             else if (direction < -3)
