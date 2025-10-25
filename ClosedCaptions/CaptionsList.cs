@@ -15,7 +15,6 @@ public class CaptionsList : GuiElement
     private ImageSurface imageSurface;
     private Context ctx;
     
-    private TextDrawUtil textUtil;
     private CairoFont font;
     
     private CaptionsConfig cfg => CaptionsModSystem.config;
@@ -56,7 +55,6 @@ public class CaptionsList : GuiElement
         ctx = genContext(imageSurface);
         
         font = CairoFont.WhiteMediumText().WithFont(cfg.Font).WithFontSize(cfg.FontSize);
-        textUtil = new TextDrawUtil();
         fontMetrics = font.GetTextExtents("Waves Crash");
         
         captions = new Caption[cfg.MaxCaptions];
