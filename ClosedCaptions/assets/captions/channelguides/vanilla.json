@@ -1,0 +1,105 @@
+{
+  "weather/tracks/verylowtremble": {
+    "name": "thunder",
+    "priority": 1
+  },
+  "weather/tracks/lowtremble": {
+    "name": "thunder",
+    "priority": 1
+  },
+  "weather/lowgrumble": {
+    "name": "thunder",
+    "priority": 1
+  },
+  "weather/lightning-distant": {
+    "name": "thunder",
+    "priority": 2
+  },
+  "weather/lightning-near": {
+    "name": "thunder",
+    "priority": 3
+  },
+  "weather/lightning-verynear": {
+    "name": "thunder",
+    "priority": 4
+  },
+  "weather/lightning-nodistance": {
+    "name": "thunder",
+    "priority": 5
+  },
+  
+  "weather/wind-leafless": {
+    "name": "wind",
+    "priority": 1
+  },
+  "weather/wind-leafy": {
+    "name": "wind",
+    "priority": 1
+  },
+  
+  "bow-draw": {
+    "name": "bow",
+    "priority": 1
+  },
+  "bow-release": {
+    "name": "bow",
+    "priority": 2
+  },
+  
+  "moltenmetal": {
+    "name": "metal",
+    "priority": 1
+  },
+  "pourmetal": {
+    "name": "metal",
+    "priority": 2
+  },
+  
+  "raft-idle": {
+    "name": "water",
+    "priority": 1
+  },
+  "raft-moving": {
+    "name": "water",
+    "priority": 2
+  },
+  
+  "environment/rainwindow": {
+    "name": "rain",
+    "priority": 1
+  },
+  "weather/tracks/rain-leafless": {
+    "name": "rain",
+    "priority": 1
+  },
+  "weather/tracks/rain-leafy": {
+    "name": "rain",
+    "priority": 1
+  },
+  
+  "environment/largesplash": {
+    "name": "splash",
+    "priority": 1
+  },
+  "environment/mediumsplash": {
+    "name": "splash",
+    "priority": 1
+  },
+  "environment/smallsplash": {
+    "name": "splash",
+    "priority": 1
+  },
+  
+  "effect/tempstab-drain": {
+    "name": "time",
+    "priority": 1
+  },
+  "effect/tempstab-low": {
+    "name": "time",
+    "priority": 2
+  },
+  "effect/tempstab-verylow": {
+    "name": "time",
+    "priority": 3
+  }
+}
