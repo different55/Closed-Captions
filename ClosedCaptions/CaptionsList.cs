@@ -16,9 +16,10 @@ public class CaptionsList : GuiElement
     private Context ctx;
     
     private CairoFont font;
-    
-    private CaptionsConfig cfg => CaptionsModSystem.config;
+
+    private CaptionsConfig cfg => CaptionsSystem.config;
     private List<Caption> captions => Caption.Captions;
+
     private bool GrowUp => 
         cfg.Position == EnumDialogArea.LeftBottom ||
         cfg.Position == EnumDialogArea.CenterBottom ||

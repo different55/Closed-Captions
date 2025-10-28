@@ -4,7 +4,7 @@ using Vintagestory.API.Common;
 
 namespace ClosedCaptions;
 
-public class CaptionsModSystem : ModSystem
+public class CaptionsSystem : ModSystem
 {
     private static CaptionsDialog dialog;
     public static CaptionsConfig config;

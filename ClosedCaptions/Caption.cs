@@ -37,7 +37,7 @@ public class Caption
         }
         
         // Prune old captions.
-        Captions.RemoveAll(caption => caption.age > CaptionsModSystem.config.Duration);
+        Captions.RemoveAll(caption => caption.age > CaptionsSystem.config.Duration);
     }
 
     private static void ProcessSound(SoundParams sound)
