@@ -16,8 +16,6 @@ public class CaptionsSystem : ModSystem
         api = capi;
         LoadConfig();
         
-        if (!config.Enabled) return;
-        
         api.Event.IsPlayerReady += (ref EnumHandling handling) =>
         {
             Reload();
@@ -33,7 +31,7 @@ public class CaptionsSystem : ModSystem
             if (config == null)
             {
                 config = new CaptionsConfig();
-                api.StoreModConfig<CaptionsConfig>(config, "captions.json");
+                api.StoreModConfig(config, "captions.json");
             }
         }
         catch (Exception e)
