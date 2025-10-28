@@ -72,5 +72,5 @@ public class CaptionsConfig
     [Browsable(true)]
     [Description("Reload captions with updated settings (hit Save first!)")]
     [Category("Actions")]
-    public static void ReloadCaptions() => CaptionsModSystem.Reload();
+    public static void ReloadCaptions() => CaptionsSystem.Reload();
 }

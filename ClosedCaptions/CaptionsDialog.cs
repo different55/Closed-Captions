@@ -8,7 +8,7 @@ public class CaptionsDialog : HudElement
     
     public CaptionsDialog(ICoreClientAPI capi) : base(capi)
     {
-        var cfg = CaptionsModSystem.config;
+        var cfg = CaptionsSystem.config;
         ElementBounds dialogBounds = ElementBounds.FixedSize(
             cfg.Width+2,
             cfg.Height*cfg.MaxCaptions+2
