@@ -42,7 +42,7 @@ public class CaptionsList : GuiElement
     }
 
     private Queue<ILoadedSound> ActiveSounds;
-    public Caption[] captions;
+    public List<Caption> captions;
     private TextExtents fontMetrics;
     
     private const double AudibilityThreshold = 0.1;
@@ -59,8 +59,7 @@ public class CaptionsList : GuiElement
         font = CairoFont.WhiteMediumText().WithFont(cfg.Font).WithFontSize(cfg.FontSize);
         fontMetrics = font.GetTextExtents("Waves Crash");
         
-        captions = new Caption[cfg.MaxCaptions];
-        for (int i = 0; i < cfg.MaxCaptions; i++) { captions[i] = new Caption(); }
+        captions = [];
 
         FieldInfo field = api.World.GetType().GetField("ActiveSounds", BindingFlags.NonPublic | BindingFlags.Instance);
         ActiveSounds = (Queue<ILoadedSound>)field.GetValue(api.World);
@@ -91,18 +90,13 @@ public class CaptionsList : GuiElement
     private void Update(float deltaTime)
     {
         SyncCaptions();
-        for (var i = 0; i < cfg.MaxCaptions; i++)
+        // Age captions. TODO: Just mark a timestamp for the last time a sound was playing.
+        foreach (var caption in captions)
         {
-            // Early out if we hit the end of the active sounds.
-            if (!captions[i].active) break;
-            
-            captions[i].age += deltaTime;
-            
-            // Early out if this sound is still young.
-            if (captions[i].age < cfg.Duration) continue;
-
-            RemoveSound(i);
+            caption.age += deltaTime;
         }
+
+        captions.RemoveAll(caption => caption.age > cfg.Duration);
     }
 
     // Synchronizes the internal caption list with the currently playing ActiveSounds.
@@ -117,13 +111,6 @@ public class CaptionsList : GuiElement
             if (!sound.IsPlaying) continue;
             ProcessSound(sound.Params);
         }
-    }
-
-    private void RemoveSound(int index)
-    {
-        for (var j = index; j < cfg.MaxCaptions - 1; j++)
-            captions[j] = captions[j + 1];
-        captions[cfg.MaxCaptions - 1] = new Caption();
     }
     
     private void DrawCaptions(Context ctx)
@@ -318,11 +305,9 @@ public class CaptionsList : GuiElement
         if (dist > sound.Range) return;
         
         // Ignore sounds that are out of earshot.
-        if (!sound.Location.ToString().StartsWith("captions:weather/wind")) return;
-        if ((1 - (dist / sound.Range)) * sound.Volume < AudibilityThreshold) {api.Logger.Debug("[CAPTIONS] {0} out of earshot, distance: {1}, range: {2}, volume: {3}, factor: {4}", sound.Location, dist, sound.Range, sound.Volume, (1 - (dist / sound.Range)) * sound.Volume);
+        if ((1 - (dist / sound.Range)) * sound.Volume < AudibilityThreshold) {
             return;
         }
-        else api.Logger.Debug("[CAPTIONS] {0} in earshot, distance: {1}, range: {2}, volume: {3}, factor: {4}", sound.Location, dist, sound.Range, sound.Volume, (1 - (dist / sound.Range)) * sound.Volume);
         
         AddSound(name, sound.Position, sound.Volume);
     }
@@ -332,38 +317,21 @@ public class CaptionsList : GuiElement
         // Refresh existing slot if it's already present. 
         foreach (var caption in captions)
         {
-            if (caption.active && caption.name == name)
-            {
-                caption.age = 0;
-                caption.activeSounds++;
-                caption.position = position;
-                caption.volume = volume;
-                return;
-            }
-        }
-     
-        // Fill an empty slot.
-        foreach (var caption in captions)
-        {
-            if (caption.active) continue;
+            if (!caption.active || caption.name != name) continue;
+            
             caption.age = 0;
-            caption.name = name;
-            caption.textWidth = font.GetTextExtents(GetDisplayName(caption.name)).Width;
+            caption.activeSounds++;
             caption.position = position;
             caption.volume = volume;
             return;
         }
         
-        // Else, recycle the oldest active slot.
-        int oldestSound = 0;
-        for (var i = 1; i < cfg.MaxCaptions; i++)
+        captions.Add(new Caption
         {
-            if (captions[i].age > captions[oldestSound].age)
-            {
-                oldestSound = i;
-            }
-        }
-        RemoveSound(oldestSound);
-        AddSound(name, position, volume);
+            age = 0,
+            name = name,
+            textWidth = font.GetTextExtents(GetDisplayName(name)).Width,
+            volume = volume
+        });
     }
 }
