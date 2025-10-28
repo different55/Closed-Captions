@@ -3,9 +3,6 @@ using Cairo;
 using Vintagestory.API.MathTools;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using Vintagestory.API.Config;
-using System.Reflection;
 
 namespace ClosedCaptions;
 
@@ -79,9 +76,9 @@ public class CaptionsList : GuiElement
         double y = (GrowUp) ? cfg.Height * cfg.MaxCaptions : -cfg.Height;
         var playerPos = api.World.Player.Entity.Pos;
         
-        var midHeight = cfg.Height / 2;
-        var arrowHeight = (int)cfg.Height - 8;
-        var arrowWidth = (int)cfg.Height/2 - 2;
+        var midHeight = cfg.Height/2;
+        var arrowHeight = cfg.Height - 8;
+        var arrowWidth = cfg.Height/2 - 2;
         
         foreach (var caption in captions)
         {
@@ -212,7 +209,7 @@ public class CaptionsList : GuiElement
         return soundName;
     }
 
-    public void DrawTriangle(Context ctx, double x, double y, double w, double h)
+    private void DrawTriangle(Context ctx, double x, double y, double w, double h)
     {
         ctx.NewPath();
         ctx.MoveTo(x, y);
