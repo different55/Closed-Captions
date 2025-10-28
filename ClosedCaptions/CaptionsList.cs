@@ -42,7 +42,7 @@ public class CaptionsList : GuiElement
     }
 
     private Queue<ILoadedSound> ActiveSounds;
-    public Caption[] captions;
+    public List<Caption> captions;
     private TextExtents fontMetrics;
     
     private const double AudibilityThreshold = 0.1;
@@ -59,8 +59,7 @@ public class CaptionsList : GuiElement
         font = CairoFont.WhiteMediumText().WithFont(cfg.Font).WithFontSize(cfg.FontSize);
         fontMetrics = font.GetTextExtents("Waves Crash");
         
-        captions = new Caption[cfg.MaxCaptions];
-        for (int i = 0; i < cfg.MaxCaptions; i++) { captions[i] = new Caption(); }
+        captions = [];
 
         FieldInfo field = api.World.GetType().GetField("ActiveSounds", BindingFlags.NonPublic | BindingFlags.Instance);
         ActiveSounds = (Queue<ILoadedSound>)field.GetValue(api.World);
