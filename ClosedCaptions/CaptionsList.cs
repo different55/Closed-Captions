@@ -90,15 +90,13 @@ public class CaptionsList : GuiElement
     private void Update(float deltaTime)
     {
         SyncCaptions();
-        for (var i = 0; i < cfg.MaxCaptions; i++)
+        // Age captions and prune old captions.
+        foreach (var caption in captions)
         {
-            // Early out if we hit the end of the active sounds.
-            if (!captions[i].active) break;
-            
-            captions[i].age += deltaTime;
+            caption.age += deltaTime;
             
             // Early out if this sound is still young.
-            if (captions[i].age < cfg.Duration) continue;
+            if (caption.age < cfg.Duration) continue;
 
             RemoveSound(i);
         }
@@ -120,9 +118,7 @@ public class CaptionsList : GuiElement
 
     private void RemoveSound(int index)
     {
-        for (var j = index; j < cfg.MaxCaptions - 1; j++)
-            captions[j] = captions[j + 1];
-        captions[cfg.MaxCaptions - 1] = new Caption();
+        captions.RemoveAt(index);
     }
     
     private void DrawCaptions(Context ctx)
