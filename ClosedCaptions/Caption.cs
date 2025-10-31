@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Vintagestory.API.Client;
@@ -54,7 +55,10 @@ public class Caption
 
         var name = Lang.GetIfExists("captions:" + id);
         if (name == null) name = id; // Unnamed sounds just use ID.
-        if (name == "") return; // Ignore sounds with no name.
+        if (name == "")
+        {
+            return;
+        } // Ignore sounds with no name.
 
         var position = sound.Position;
         var dist = 0.0f;
@@ -69,20 +73,20 @@ public class Caption
         
         // Ignore sounds that are out of earshot.
         if ((1 - (dist / sound.Range)) * sound.Volume < AudibilityThreshold) return;
-
+        
         AddSound(name, sound.Position, sound.Volume);
     }
 
-    private static void AddSound(string name, Vec3f Position, double volume)
+    private static void AddSound(string name, Vec3f position, double volume)
     {
         // Refresh existing slot if it's already present.
         foreach (var caption in Captions)
         {
-            if (caption.name != name) return;
+            if (caption.name != name) continue;
 
             caption.lastHeard = api.ElapsedMilliseconds;
             caption.activeSounds++;
-            caption.position = Position;
+            caption.position = position;
             caption.volume = volume;
             return;
         }
@@ -92,12 +96,15 @@ public class Caption
         {
             lastHeard = api.ElapsedMilliseconds,
             name = name,
-            volume = volume
+            position = position,
+            volume = volume,
+            activeSounds = 1
+            
         });
     }
     
-    public long lastHeard = 0;
-    public double age => api.ElapsedMilliseconds-lastHeard / 1000.0; 
+    public long lastHeard;
+    public double age => (api.ElapsedMilliseconds-lastHeard) / 1000.0; 
     public string name;
     public Vec3f position;
     public double volume;

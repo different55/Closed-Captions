@@ -16,6 +16,8 @@ public class CaptionsModSystem : ModSystem
         api = capi;
         LoadConfig();
         
+        Caption.Initialize(api);
+        
         if (!config.Enabled) return;
         
         api.Event.IsPlayerReady += (ref EnumHandling handling) =>

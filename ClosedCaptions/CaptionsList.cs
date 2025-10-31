@@ -18,6 +18,7 @@ public class CaptionsList : GuiElement
     private CairoFont font;
     
     private CaptionsConfig cfg => CaptionsModSystem.config;
+    private List<Caption> captions => Caption.Captions;
     private bool GrowUp => 
         cfg.Position == EnumDialogArea.LeftBottom ||
         cfg.Position == EnumDialogArea.CenterBottom ||
@@ -26,26 +27,8 @@ public class CaptionsList : GuiElement
 
     private Color warning;
     private Color notice;
-    
-    public class Caption {
-        public double age = -1;
-        public string name;
-        public double textWidth;
-        public Vec3f position;
-        public double volume;
-        public int activeSounds;
 
-        public bool active
-        {
-            get => age >= 0;
-        }
-    }
-
-    private Queue<ILoadedSound> ActiveSounds;
-    public List<Caption> captions;
     private TextExtents fontMetrics;
-    
-    private const double AudibilityThreshold = 0.1;
     
     public CaptionsList(ICoreClientAPI capi, ElementBounds bounds) : base(capi, bounds) {
         textTexture = new LoadedTexture(capi);
@@ -58,11 +41,6 @@ public class CaptionsList : GuiElement
         
         font = CairoFont.WhiteMediumText().WithFont(cfg.Font).WithFontSize(cfg.FontSize);
         fontMetrics = font.GetTextExtents("Waves Crash");
-        
-        captions = [];
-
-        FieldInfo field = api.World.GetType().GetField("ActiveSounds", BindingFlags.NonPublic | BindingFlags.Instance);
-        ActiveSounds = (Queue<ILoadedSound>)field.GetValue(api.World);
         
         warning = new Color(cfg.WarningRed, cfg.WarningGreen, cfg.WarningBlue);
         notice = new Color(cfg.NoticeRed, cfg.NoticeGreen, cfg.NoticeBlue);
@@ -82,35 +60,10 @@ public class CaptionsList : GuiElement
     }
     
     public override void RenderInteractiveElements(float deltaTime) {
-        Update(deltaTime);
+        Caption.SyncCaptions();
         DrawCaptions(ctx);
         generateTexture(imageSurface, ref textTexture);
         api.Render.Render2DTexturePremultipliedAlpha(textTexture.TextureId, (int)Bounds.renderX, (int)Bounds.renderY, (int)Bounds.InnerWidth, (int)Bounds.InnerHeight);
-    }
-    private void Update(float deltaTime)
-    {
-        SyncCaptions();
-        // Age captions. TODO: Just mark a timestamp for the last time a sound was playing.
-        foreach (var caption in captions)
-        {
-            caption.age += deltaTime;
-        }
-
-        captions.RemoveAll(caption => caption.age > cfg.Duration);
-    }
-
-    // Synchronizes the internal caption list with the currently playing ActiveSounds.
-    private void SyncCaptions()
-    {
-        // Reset the activeSound count.
-        foreach (var caption in captions)
-            caption.activeSounds = 0;
-
-        foreach (var sound in ActiveSounds)
-        {
-            if (!sound.IsPlaying) continue;
-            ProcessSound(sound.Params);
-        }
     }
     
     private void DrawCaptions(Context ctx)
@@ -131,7 +84,6 @@ public class CaptionsList : GuiElement
         
         foreach (var caption in captions)
         {
-            if (!caption.active) continue;
             y -= (GrowUp) ? cfg.Height : -cfg.Height;
         
             var brightness = ((1 - ((caption.age - cfg.Duration + cfg.FadeDuration) / cfg.FadeDuration)) * Math.Max(1, caption.volume) / 2 + 0.5);
@@ -172,25 +124,30 @@ public class CaptionsList : GuiElement
             ctx.SetSourceColor(bg);
             ctx.Rectangle(2, y+1, cfg.Width-2, cfg.Height-2);
             ctx.Fill();
+            
             // Draw stroke
             ctx.SetSourceColor(stroke);
             ctx.Rectangle(2, y+1, cfg.Width-2, cfg.Height-2);
             ctx.LineWidth = 1.0;
             ctx.Stroke();
+            
             // Draw text
             ctx.SetSourceColor(fg);
-            ctx.MoveTo(cfg.Width/2 - (caption.textWidth/2), y + midHeight + (fontMetrics.Height/2 - (fontMetrics.Height + fontMetrics.YBearing)));
+            var textWidth = font.GetTextExtents(soundName).Width;
+            ctx.MoveTo(cfg.Width/2 - (textWidth/2), y + midHeight + (fontMetrics.Height/2 - (fontMetrics.Height + fontMetrics.YBearing)));
             ctx.ShowText(soundName);
             
+            // Skip drawing arrows for positionless sounds.
             if (caption.position == null || caption.position.IsZero) continue;
             
             var dist = caption.position.DistanceTo(playerPos.XYZFloat);
             var yaw = Math.Atan2(caption.position.Z - playerPos.Z, caption.position.X - playerPos.X);
             
-            // Ignore sounds that are too close.
-            if (dist < 2) continue;
+            // Skip drawing arrows for sounds that are too close.
+            if (dist < 1.5) continue;
 
             // Ignore directionality for overlapping sounds.
+            // TODO: Use direction of most recent sound, once I actually start storing whole sounds.
             if (caption.activeSounds > 1) continue;
             
             // 0 is directly in front of the player
@@ -262,76 +219,5 @@ public class CaptionsList : GuiElement
         ctx.LineTo(x - w, y + h/2);
         ctx.LineTo(x, y);
         ctx.Fill();
-    }
-
-    public void ProcessSound(SoundParams sound)
-    {
-        // Unknown condition yoinked without understanding from SubtitlesMod
-        var player = api.World.Player;
-        if (player == null) return;
-        
-        // Ignore music
-        if (sound.SoundType == EnumSoundType.Music) return;
-        
-        // Calculate sound ID
-        var path = sound.Location.Path;
-        var id = path.StartsWith("sounds/") && path.EndsWith(".ogg") ? path.Substring(7, path.Length - 7 - 4) : path;
-        // Strip trailing digit
-        var lastChar = id.ToCharArray(id.Length - 1, 1)[0];
-        if (lastChar >= '0' && lastChar <= '9')
-            id = id.Substring(0, id.Length - 1);
-        
-        var name = Lang.GetIfExists("captions:" + id);
-        // Ignore specified sounds
-        if (name == "") return;
-        // Unnamed sounds
-        if (name == null) name = id;
-        
-        var position = sound.Position;
-        if (position == null || position.IsZero)
-        {
-            if (sound.Volume > AudibilityThreshold)
-                AddSound(name, null, sound.Volume);
-            return;
-        }
-
-        var playerPos = player.Entity.Pos.AsBlockPos;
-        var dx = sound.Position.X - playerPos.X;
-        var dy = sound.Position.Y - playerPos.Y;
-        var dz = sound.Position.Z - playerPos.Z;
-        var dist = Math.Sqrt(dx * dx + dy * dy + dz * dz);
-        
-        // Ignore sounds that are out of range.
-        if (dist > sound.Range) return;
-        
-        // Ignore sounds that are out of earshot.
-        if ((1 - (dist / sound.Range)) * sound.Volume < AudibilityThreshold) {
-            return;
-        }
-        
-        AddSound(name, sound.Position, sound.Volume);
-    }
-    
-    public void AddSound(string name, Vec3f position, double volume)
-    {
-        // Refresh existing slot if it's already present. 
-        foreach (var caption in captions)
-        {
-            if (!caption.active || caption.name != name) continue;
-            
-            caption.age = 0;
-            caption.activeSounds++;
-            caption.position = position;
-            caption.volume = volume;
-            return;
-        }
-        
-        captions.Add(new Caption
-        {
-            age = 0,
-            name = name,
-            textWidth = font.GetTextExtents(GetDisplayName(name)).Width,
-            volume = volume
-        });
     }
 }
