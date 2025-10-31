@@ -93,10 +93,10 @@ public class CaptionsList : GuiElement
             var fgBrightness = (cfg.TextOpacity * 0.5) + (brightness * cfg.TextOpacity * 0.5);
 
             // Get display name, stripping special characters and adding indicators if ShowSymbols is enabled.
-            var soundName = GetDisplayName(caption.name);
+            var soundName = GetDisplayName(caption);
             
             // Modify colors for special sound types.
-            if (caption.name.StartsWith("!"))
+            if (caption.urgency == Caption.Urgency.Warning)
             {
                 fg = warning;
                 stroke = warning;
@@ -107,7 +107,7 @@ public class CaptionsList : GuiElement
                     bg = warning;
                 }
             }
-            else if (caption.name.StartsWith("+"))
+            else if (caption.urgency == Caption.Urgency.Notice)
             {
                 fg = notice;
                 stroke = notice;
@@ -188,25 +188,15 @@ public class CaptionsList : GuiElement
         }
     }
 
-    private string GetDisplayName(string soundName)
+    private string GetDisplayName(Caption caption)
     {
-        if (soundName.StartsWith("?"))
+        if (!cfg.ShowSymbols) return caption.name;
+        return caption.urgency switch
         {
-            soundName = soundName.Substring(1);
-        }
-        if (soundName.StartsWith("!"))
-        {
-            soundName = soundName.Substring(1);
-            if (cfg.ShowSymbols)
-                soundName = "! " + soundName + " !";
-        }
-        else if (soundName.StartsWith("+"))
-        {
-            soundName = soundName.Substring(1);
-            if (cfg.ShowSymbols)
-                soundName = "+ " + soundName + " +";
-        }
-        return soundName;
+            Caption.Urgency.Warning => "! " + caption.name + " !",
+            Caption.Urgency.Notice => "+ " + caption.name + " +",
+            _ => caption.name
+        };
     }
 
     private void DrawTriangle(Context ctx, double x, double y, double w, double h)

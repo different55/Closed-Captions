@@ -54,11 +54,21 @@ public class Caption
         id = id.TrimEnd('0', '1', '2', '3', '4', '5', '6', '7', '8', '9');
 
         var name = Lang.GetIfExists("captions:" + id);
-        if (name == null) name = id; // Unnamed sounds just use ID.
-        if (name == "")
+        if (name == null) name = id; // Unnamed sounds use ID as fallback.
+        if (name == "") return; // Ignore empty stringed sounds.
+
+        var urgency = Urgency.Normal;
+        if (name.StartsWith('?')) name = name[1..];
+        if (name.StartsWith('!'))
         {
-            return;
-        } // Ignore sounds with no name.
+            name = name[1..];
+            urgency = Urgency.Warning;
+        }
+        if (name.StartsWith('+'))
+        {
+            name = name[1..];
+            urgency = Urgency.Notice;
+        }
 
         var position = sound.Position;
         var dist = 0.0f;
@@ -74,10 +84,10 @@ public class Caption
         // Ignore sounds that are out of earshot.
         if ((1 - (dist / sound.Range)) * sound.Volume < AudibilityThreshold) return;
         
-        AddSound(name, sound.Position, sound.Volume);
+        AddSound(name, sound.Position, sound.Volume, urgency);
     }
 
-    private static void AddSound(string name, Vec3f position, double volume)
+    private static void AddSound(string name, Vec3f position, double volume, Urgency urgency)
     {
         // Refresh existing slot if it's already present.
         foreach (var caption in Captions)
@@ -88,6 +98,7 @@ public class Caption
             caption.activeSounds++;
             caption.position = position;
             caption.volume = volume;
+            caption.urgency = urgency;
             return;
         }
         
@@ -98,8 +109,8 @@ public class Caption
             name = name,
             position = position,
             volume = volume,
-            activeSounds = 1
-            
+            activeSounds = 1,
+            urgency = urgency
         });
     }
     
@@ -109,4 +120,12 @@ public class Caption
     public Vec3f position;
     public double volume;
     public int activeSounds;
+    public Urgency urgency = Urgency.Normal;
+
+    public enum Urgency
+    {
+        Normal,
+        Notice,
+        Warning
+    }
 }
