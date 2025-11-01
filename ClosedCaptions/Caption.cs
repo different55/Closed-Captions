@@ -4,12 +4,14 @@ using System.Reflection;
 using Vintagestory.API.Client;
 using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
+using Channel = (string Name, int Priority);
 
 namespace ClosedCaptions;
 
 public class Caption
 {
     private static double AudibilityThreshold = 0.1;
+    private static CaptionsChannelGuide _channelGuide;
     private static ICoreClientAPI api;
     private static Queue<ILoadedSound> ActiveSounds;
     public static List<Caption> Captions = [];
@@ -17,6 +19,8 @@ public class Caption
     public static void Initialize(ICoreClientAPI api)
     {
         Caption.api = api;
+
+        _channelGuide = new CaptionsChannelGuide(api);
         
         FieldInfo field = api.World.GetType().GetField("ActiveSounds", BindingFlags.NonPublic | BindingFlags.Instance);
         ActiveSounds = (Queue<ILoadedSound>)field.GetValue(api.World);
@@ -25,10 +29,6 @@ public class Caption
     // Synchronizes the internal caption list with the currently active sounds.
     public static void SyncCaptions()
     {
-        // Reset the activeSound count.
-        foreach (var caption in Captions)
-            caption.activeSounds = 0;
-
         // Update captions with fresh sound data.
         foreach (var sound in ActiveSounds)
         {
@@ -82,23 +82,35 @@ public class Caption
         if (dist > sound.Range) return;
         
         // Ignore sounds that are out of earshot.
-        if ((1 - (dist / sound.Range)) * sound.Volume < AudibilityThreshold) return;
+        var audibility = (1 - (dist / sound.Range)) * sound.Volume;
+        if (audibility < AudibilityThreshold) return;
         
-        AddSound(name, sound.Position, sound.Volume, urgency);
+        AddSound(name, sound, audibility, _channelGuide.GetChannel(id), urgency);
     }
 
-    private static void AddSound(string name, Vec3f position, double volume, Urgency urgency)
+    private static void AddSound(string name, SoundParams sound, float audibility, Channel channel, Urgency urgency)
     {
+        // Substitute audio description for a channel name.
+        if (channel.Name == null) channel.Name = name;
+        
         // Refresh existing slot if it's already present.
         foreach (var caption in Captions)
         {
-            if (caption.name != name) continue;
-
+            // We only want to update this caption if it has the same name or if it's on the same channel.
+            if (caption.name != name && caption.channel != channel.Name) continue;
             caption.lastHeard = api.ElapsedMilliseconds;
-            caption.activeSounds++;
-            caption.position = position;
-            caption.volume = volume;
-            caption.urgency = urgency;
+
+            if (channel.Priority < caption.priority ||
+                (channel.Priority == caption.priority && audibility > caption.audibility))
+            {
+                caption.name = name;
+                caption.channel = channel.Name;
+                caption.priority = channel.Priority;
+                caption.position = sound.Position;
+                caption.audibility = audibility;
+                caption.urgency = urgency;
+            }
+            
             return;
         }
         
@@ -107,19 +119,21 @@ public class Caption
         {
             lastHeard = api.ElapsedMilliseconds,
             name = name,
-            position = position,
-            volume = volume,
-            activeSounds = 1,
+            channel = channel.Name,
+            priority = channel.Priority,
+            position = sound.Position,
+            audibility = audibility,
             urgency = urgency
         });
     }
     
     public long lastHeard;
-    public double age => (api.ElapsedMilliseconds-lastHeard) / 1000.0; 
+    public double age => (api.ElapsedMilliseconds-lastHeard) / 1000.0;
     public string name;
+    public string channel;
+    public int priority;
     public Vec3f position;
-    public double volume;
-    public int activeSounds;
+    public float audibility;
     public Urgency urgency = Urgency.Normal;
 
     public enum Urgency

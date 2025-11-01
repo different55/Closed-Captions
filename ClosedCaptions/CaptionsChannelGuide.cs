@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using Vintagestory.API.Common;
 using System.Linq;
-using Channel = (string Name, int Priority)?;
+using Channel = (string Name, int Priority);
 
 namespace ClosedCaptions;
 
 public class CaptionsChannelGuide
 {
-    private Dictionary<string, Channel> _channels = null;
+    private Dictionary<string, Channel> channels = null;
     private ICoreAPI api;
     public CaptionsChannelGuide(ICoreAPI api)
     {
@@ -17,14 +17,14 @@ public class CaptionsChannelGuide
     public void ReloadChannels()
     {
         var guides = api.World.AssetManager.GetMany<Dictionary<string, Channel>>(api.Logger, "channelguides/", null);
-        _channels = new Dictionary<string, Channel>();
+        channels = new Dictionary<string, Channel>();
         foreach (var g in guides)
         {
-            g.Value.ToList().ForEach(c => _channels[c.Key] = c.Value);
+            g.Value.ToList().ForEach(c => channels[c.Key] = c.Value);
         }
     }
-    public Channel GetChannel(string name)
+    public Channel GetChannel(string id)
     {
-        return _channels.TryGetValue(name, out var channel) ? channel : null;
+        return channels.GetValueOrDefault(id);
     }
 }

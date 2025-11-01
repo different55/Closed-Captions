@@ -84,7 +84,7 @@ public class CaptionsList : GuiElement
         {
             y -= (GrowUp) ? cfg.Height : -cfg.Height;
         
-            var brightness = ((1 - ((caption.age - cfg.Duration + cfg.FadeDuration) / cfg.FadeDuration)) * Math.Max(1, caption.volume) / 2 + 0.5);
+            var brightness = ((1 - ((caption.age - cfg.Duration + cfg.FadeDuration) / cfg.FadeDuration)) * Math.Max(1, caption.audibility) / 2 + 0.5);
 
             var bg = new Color(0, 0, 0, 1);
             var fg = new Color(1, 1, 1, 1);
@@ -143,10 +143,6 @@ public class CaptionsList : GuiElement
             
             // Skip drawing arrows for sounds that are too close.
             if (dist < 1.5) continue;
-
-            // Ignore directionality for overlapping sounds.
-            // TODO: Use direction of most recent sound, once I actually start storing whole sounds.
-            if (caption.activeSounds > 1) continue;
             
             // 0 is directly in front of the player
             // ±4 is directly left/right of the player, respectively
