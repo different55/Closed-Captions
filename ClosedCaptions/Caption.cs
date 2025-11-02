@@ -69,6 +69,11 @@ public class Caption
             name = name[1..];
             urgency = AlertLevel.Notice;
         }
+        if (name.StartsWith('~'))
+        {
+            name = name[1..];
+            urgency = AlertLevel.Environmental;
+        }
 
         var position = sound.Position;
         var dist = 0.0f;
@@ -135,6 +140,7 @@ public class Caption
 
     public enum AlertLevel
     {
+        Environmental,
         Normal,
         Notice,
         Warning
