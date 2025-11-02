@@ -48,11 +48,3 @@ If you want to add support for a sound effect to this mod, I welcome pull reques
 
 Currently, this mod has built-in support for:
  - Primitive Survival
-
-## Limitations
-
-Like the original mod, currently there is no way to move or resize the captions dialog. This is planned for the unknown future, but pull requests are welcome.
-
-Currently, sounds' directions are pinned to where they start, so if the source of a sound moves while the sound is still playing, it will not update. A fix for this is planned.
-
-Related to this, sometimes sounds that occur at your location like "Footsteps" and "Armor clatters" will occasionally flicker as showing as behind you as you walk away from your footsteps.
