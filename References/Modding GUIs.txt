@@ -1,0 +1,466 @@
+{{GameVersion|1.19.8}}<translate>
+<!--T:1-->
+Creating good graphical user interfaces is a challenging task - sometimes even the largest of companies mess it up.
+
+<!--T:2-->
+In Vintage Story you currently need to formulate your GUIs in code, which requires acute spacial thinking. Hopefully someday we'll have a point&click GUI designer that takes off a lot of work. Until then, here are some of the essentials.
+
+__TOC__
+
+== Dialog Outline Modes ==
+The [[Controls#Debug and macros|Cycle Dialog Outline Modes keybinding]] can be used to add outlines around GUI elements, making it much easier to understand how your code is translated into the visual GUI. Pressing the key cycles between the 3 modes. By default the key is bound to {{Keypress|Alt}} + {{Keypress|F10}}, but on some Linux distros it may need to be rebound. Note that a number of Alt + F... keys are overridden by the Nvidia GeForce Experience app. You may wish to change the key bindings for these.
+
+=== Mode 0: No Outlines ===
+This is the default mode when the game is started. The GUI elements are shown, but no outline rectangles are drawn.
+
+=== Mode 1: Element and Composer Outlines ===
+In addition to the mode 2 rectangles around GuiElements (explained below), bold white rectangles are drawn around GuiComposers.
+
+[[File:Settings-controls tab-mode 1.png|class=pixelated|frame|none|Controls dialog in outline mode 1<br>The outer, bold white rectangle is from a GuiComposer.]]
+
+=== Mode 2: Element Outlines ===
+The bounding boxes of GuiElements are drawn as rectangles. The rectangle color is determined by the possibly overridden implementation of [https://apidocs.vintagestory.at/api/Vintagestory.API.Client.GuiElement.html#Vintagestory_API_Client_GuiElement_OutlineColor GuiElement.OutlineColor], which returns a color in [https://github.com/anegostudios/vsapi/blob/9bf26b71970ff2168d6f8534cf6ee4a914087511/Math/ColorUtil.cs#L505 0xAARRGGBB format].
+
+[[File:Settings-controls tab-mode 2.png|class=pixelated|frame|none|Controls dialog in outline mode 2]]
+
+{| class="wikitable"
+|-
+! Class
+! Color
+|-
+| GuiElementHoverText || yellow - 0x80FFFF00
+|-
+| GuiElementItemSlotGridBase || bold green - 0xFF00FF00
+|-
+| GuiElementClip || bold red - 0xFFFF0000
+|-
+| GuiElement || white - 0x80FFFFFF
+|}
+
+== GUI Base Classes == <!--T:4-->
+You should encapsulate every GUI Dialog into its own class, albeit a dialog may consist of multiple windows - the vanilla character dialog for example has two - one for the players wearables and one for the player stats. There's a couple of base classes to make your life a bit easier.
+
+===Block Entity GUI=== <!--T:5-->
+
+<!--T:6-->
+To create a GUI that's bound to a block entity, inherit from <code>GuiDialogBlockEntity</code>. In your block entity code you can then create and open that gui e.g. upon player interaction (example: [https://github.com/anegostudios/vssurvivalmod/blob/648193749d2ea5b8c155d27db0c7f6dc1050f9cd/BlockEntity/BEQuern.cs#L602 Quern Block Entity], [https://github.com/anegostudios/vssurvivalmod/blob/master/Gui/GuiDialogBlockEntityQuern.cs Quern Block Dialog])
+
+===HUD=== <!--T:7-->
+
+<!--T:8-->
+To create a GUI element which is not interactable, inherit from <code>HudElement</code>.
+
+===General Purpose GUI=== <!--T:9-->
+
+<!--T:10-->
+For any other uses, inerhit from the general purpose class <code>GuiDialog</code>, from which HudElement and GuiDialogBlockEntity also inherit from. You can override <code>ToggleKeyCombinationCode</code> to something like "yourAweseomeHotkeyCode" and use <code>capi.Input.RegisterHotKey</code> + <code>capi.Input.SetHotKeyHandler</code> to have your own keyboard key mapped to opening/closing your GUI (example: [https://github.com/anegostudios/vsessentialsmod/blob/master/Systems/WorldMap/WorldMapManager.cs#L183 World Map])
+
+== ElementBounds ==
+
+An ElementBounds instance describes the several bounding boxes and offsets of a GuiElement, which are summarized in the diagram below. For fixed alignments, (fixedX, fixedY) is the vector from the top-left corner of the parent element's content box to the top-left corner of the child element's offset point. For auto alignments, (marginX, marginY) is used instead (technically (absMarginX, absMarginY)). After that comes another offset vector called (fixedOffsetX, fixedOffsetY) which points to the top left corner of the child padding box. Inside of the padding box is the content box. The inner width/height only contains the content. The outer width/height contains the content and padding.
+
+[[File:Gui box model.png|box model]]
+
+The fields in ElementBounds with the 'abs' prefix should be treated as internal fields. They are written by ElementBounds.CalcWorldBounds. However, these other fields may be set either directly or with helper methods.
+
+<!--T:15-->
+{| class="wikitable"
+|-
+! Fields
+! Primary setters
+! Purpose
+|-
+| fixedX/fixedY
+|
+* WithFixedPosition
+* BelowCopy
+* RightCopy
+* FixedUnder
+* FixedRightOf
+* FixedLeftOf
+* WithFixedOffset
+* Fixed
+| The offset of the child padding top-left corner relative to the parent content top-left corner. These are the main fields used to place GUI elements. These fields should only be set if the corresponding x/y dimension has a fixed sizing and alignment mode.
+|-
+| fixedWidth/fixedHeight
+|
+* WithFixedSize
+* WithFixedWidth
+* WithFixedHeight
+* Fixed
+| The size of the element content. These fields should only be used when the corresponding dimension is in the ElementSizing.Fixed or ElementSizing.PercentualSubstractFixed mode.
+|-
+| fixedPaddingX/fixedPaddingY
+|
+* WithFixedPadding
+| The amount of empty space to put around the element
+|-
+| fixedMarginX/fixedMarginY
+|
+* WithFixedMargin
+| These fields are never read by Vanilla VS. The corresponding absMarginX/absMarginY are internally calculated based on the alignment mode, but those calculations ignore fixedMarginX/fixedMarginY.
+|-
+| ParentBounds/ChildBounds
+|
+* WithChild
+* ForkContainingChild
+| Tracks the parent/child relation between elements
+|-
+| Alignment
+|
+* WithAlignment
+* FixedPos
+* Fixed
+* Percentual
+| The alignment of the element. If set to <code>None</code> the FixedX/Y Position is used. For any other value, the FixedX/Y values break the layout. For example when you used <code>RightTop</code> the element will always be at the right top most corner of its parent bounds. If you use <code>RightFixed</code> the element will be right aligned, but its Y-Position is determined by <code>FixedY</code>
+|-
+| horizontalSizing/verticalSizing
+|
+* WithSizing
+| The sizing method to be used, can be either <code>Fixed</code> (default), <code>Percentual</code> or <code>FitToChildren</code>
+|}
+
+== Layout ==
+
+Compared to the CSS flow layout algorithm, the GuiComposer layout algorithm is very primitive.
+
+=== Alignment ===
+
+The alignment option can automatically place a child element in any of the 4 corners or 4 edges of the parent. However, the alignment algorithm does nothing to prevent two child elements from overlapping on the same edge/corner. For example, if two text boxes were added to the bottom edge of a dialog, then the two pieces of text would overlap. There are a few options to fix the conflict:
+# Use different edges or corners for the two pieces of text.
+# Use <code>.WithFixedAlignmentOffset(0, -10)</code> to move one of the children up 10 pixels (relative to the bottom alignment in this example).
+# Give up on automatic alignment and used fixed alignment instead, where the child coordinates must be calculated exactly relative to the top-left corner of the parent content box.
+
+Typically one uses fixed alignment to layout the dialog. The functions <code>BelowCopy</code> and <code>RightCopy</code> help calculate the bounds next to the previous bounds.
+
+=== Sizing ===
+
+<code>ElementSizing.FitToChildren</code> tells a parent to automatically size itself so that it contains the bottom-right corner of the padding box for all of its children. Note that unlike the HTML flow layout, the VS layout does not prevent the children from overlapping. So the sizing algorithm is more or less sizing the parent to fit its largest child.
+
+== GUI Basics == <!--T:11-->
+
+<!--T:12-->
+In general, you can pretty much build your own GUI system if you want to, by just overriding <code>OnRenderGUI</code> and render whatever you like. There's a multitude of overridable methods to handle mouse and keyboard inputs as well, see also the [https://github.com/anegostudios/vsapi/blob/master/Client/UI/Dialog/GuiDialog.cs GuiDialog] class on Github
+
+<!--T:13-->
+If you want to use the vanilla GUI system, it's concept is merely a flat or hierarchical list of GUI elements placed at certain positions. The position is determined by an instance of <code>ElementBounds</code>. Let's have a closer look at it's properties:
+
+=== ElementBounds=== <!--T:14-->
+
+
+===GuiComposer=== <!--T:16-->
+
+<!--T:17-->
+This is the component that builds and manages your GUI elements for you. You can create a composer via the client api: <code>capi.Gui.CreateCompo(dialogName, bounds)</code>. You have to supply it with a unique identifier and the overall dialog bounds. Once you have a GUIComposer instance you can chain-add elements.
+</translate>
+
+====Dialog / Graphics====
+* <code>.AddShadedDialogBG</code>: Draws a pretty background and dialog border
+* <code>.AddDialogTitleBar</code>: Draws a title bar with a close button and a button to move around the dialog
+* <code>.AddInset</code>: Adds a darkened section with a inset border around it
+
+====Text====
+* <code>.AddStaticText</code>: Add a static snippet of text
+* <code>.AddDynamicText</code>: Add a snippet of text that can be set to other texts without the need to redraw the whole dialog
+* <code>.AddRichtext</code>: Same as <code>.AddDynamicText</code> but allows use of [[VTML]] - a minimalist version of HTML code
+* <code>.AddHoverText</code>: When the mouse cursor moves over the element boundaries, will show supplied text as a tooltip
+
+====UI Control/Input====
+* <code>.AddButton</code>: Adds a clickable button
+* <code>.AddDropDown</code>: Adds a drop down element
+* <code>.AddHorizontalTabs</code>: Adds horizontally aligned tabs, like the ingame chat window has
+* <code>.AddVerticalScrollbar</code>: Adds a vertical scrollbar
+* <code>.AddTextInput</code>: Adds an single line editable text field
+* <code>.AddNumberInput</code>: Adds an editable text field built for entering numbers
+* <code>.AddTextArea</code>: Adds multiple line editable text field
+
+====Tables/Grids/Inventory====
+
+* <code>.AddItemSlotGrid</code>: Create a grid displaying the contents of supplied inventory (example: [https://github.com/anegostudios/vsessentialsmod/blob/master/Gui/GuiDialogCreatureContents.cs GuiDialogCreatureContents])
+* <code>.AddSkillItemGrid</code>: Create a grid of custom elements (example: [https://github.com/anegostudios/vssurvivalmod/blob/master/Gui/GuiDialogBlockEntityRecipeSelector.cs GuiDialogBlockEntityRecipeSelector])
+
+====Other====
+* <code>.AddIf</code>/<code>.EndIf</code>: Can be used to conditionally add certain elements (but you can also just split up your creation code for more fine grained control)
+* <code>.BeginClip</code>/<code>.EndClip</code>: Used in combination with a scrollbar to cut away oversized content, such as in the creative inventory
+* <code>.AddStaticCustomDraw</code>: Lets you define your own drawing code to be added to the GUI
+
+== GuiElements ==
+
+To better show what is rendered by the GuiElements, the screenshots shown below were taken with dialog outlines enabled.
+
+=== GuiElementDialogBackground ===
+Draws a pretty background and dialog border. The background is drawn on both the padding and content boxes. Typically one uses <code>ElementBounds.Fill</code> (with padding optionally set) to set the background for the entire dialog. Although it is technically possible to use smaller bounds. The <code>withTitleBar</code> does not actually draw the title bar, but instead moves the top of the background box down <code>GuiStyle.TitleBarHeight</code> units to make room for the title bar.
+
+GuiComposer factory functions:
+* <code>.AddShadedDialogBG(ElementBounds bounds, bool withTitleBar = true, double strokeWidth = 5.0, float alpha = 0.75f)</code>
+* <code>.AddDialogBG(ElementBounds bounds, bool withTitleBar = true, float alpha = 1f)</code>
+
+<gallery>
+File:AddDialogBG.png|class=pixelated|AddDialogBG with a bounding box set to the entire dialog. The blank space at the top is due to the withTitleBar=true parameter.
+File:AddShadedDialogBG.png|class=pixelated|thumb|none|AddShadedDialogBG with a bounding box set to the entire dialog. The blank space at the top is due to the withTitleBar=true parameter.
+File:AddShadedDialogBG_with_position_offset.png|class=pixelated|thumb|none|AddShadedDialogBG with a bounding box less than the entire dialog. In this case the blur from AddShadedDialogBG is offset incorrectly. AddDialogBG works correctly (not shown).
+</gallery>
+
+=== GuiElementDialogTitleBar ===
+Draws a title bar with a close button and a button to move around the dialog. The drawBg option is ignored.
+
+GuiComposer factory functions:
+* <code>.AddDialogTitleBar(string text, Action onClose = null, CairoFont font = null, ElementBounds bounds = null)</code>: The default null for the bounds will put the title bar in the correct place. The default title bar height is <code>GuiStyle.TitleBarHeight</code>.
+
+<gallery>
+File:AddDialogTitleBar.png|class=pixelated|
+</gallery>
+
+=== GuiElementInset ===
+Adds a darkened section with a inset border around it.
+
+GuiComposer factory functions:
+* <code>.AddInset(string text, ElementBounds bounds, int depth = 4, float brightness = 0.85f)</code>
+
+<gallery>
+File:AddInset.png|class=pixelated|Inset drawn on top of a background, with 10 units on all sides.
+File:AddInset_with_padding.png|class=pixelated|Do not use padding in the inset bounds. Otherwise the rectangle for the darkened section is miscalculated and drawn outside of the embossed border.
+</gallery>
+
+=== GuiElementStaticText  ===
+Add a static snippet of text.
+
+GuiComposer factory functions:
+* <code>.AddStaticText(string text, CairoFont font, ElementBounds bounds, string key = null)</code>
+* <code>.AddStaticText(string text, CairoFont font, EnumTextOrientation orientation, ElementBounds bounds, string key = null)</code>
+* <code>.AddStaticTextAutoBoxSize(string text, CairoFont font, EnumTextOrientation orientation, ElementBounds bounds, string key = null)</code>: adds text and resizes the bounding box such that the text fits on one line. Since the bounds are updated immediately, this may be useful for adding additional components to the right of the text. After calling <code>AddStaticTextAutoBoxSize</code>, one could use <code>newbounds.FixedRightOf(textbounds)</code>,  <code>newbounds.RightOf(textbounds)</code>, or  <code>textbounds.RightCopy()</code>.
+* <code>.AddStaticTextAutoFontSize(string text, string text, CairoFont font, ElementBounds bounds, string key = null)</code>: attempts to shrink the font size such that the text fits in one line in <code>bounds</code>.
+
+The standard fonts can be obtained through static factory methods inside of CairoFont. These are commonly used:
+* <code>CairoFont.WhiteSmallText()</code>
+* <code>CairoFont.WhiteDetailText()</code>
+
+The text orientation would more accurately be called the text justification. It defaults to the font's justification, which is typically left. The options are:
+* <code>Left</code>
+* <code>Right</code>
+* <code>Center</code>
+* <code>Justify</code>: does the same thing as Left.
+
+The key option is used to find the static text later with <code>GuiElementStaticText.GetStaticText(SingleComposer, key)</code>.
+
+<gallery>
+File:AddStaticText.png|class=pixelated|WhiteSmallText drawn on top of a dialog background, with 10 units of padding.
+File:AddStaticTextAutoBoxSize.png|class=pixelated|<code>AddStaticTextAutoBoxSize</code> auto sized the text box such that the single line of text was clipped by the dialog bounds.
+File:AddStaticTextAutoFontSize.png|class=pixelated|<code>AddStaticTextAutoFontSize</code> attempted to shrink down the font so that it could fit on a single line.
+</gallery>
+
+== Example ==
+
+=== First iteration: basic static text ===
+<syntaxhighlight lang="c#">
+private void SetupDialog()
+{
+    // Auto-sized dialog at the center of the screen
+    ElementBounds dialogBounds = ElementStdBounds.AutosizedMainDialog.WithAlignment(EnumDialogArea.CenterMiddle);
+
+    // Just a simple 300x300 pixel box
+    ElementBounds textBounds = ElementBounds.Fixed(0, 0, 300, 300);
+        
+    SingleComposer = capi.Gui.CreateCompo("myAwesomeDialog", dialogBounds)
+        .AddStaticText("This is a piece of text at the center of your screen - Enjoy!", CairoFont.WhiteDetailText(), textBounds)
+        .Compose()
+    ;
+}
+</syntaxhighlight>
+
+Some explanations:
+* <code>ElementStdBounds</code>: Contains a bunch of often used element bounds configurations. See also [https://github.com/anegostudios/vsapi/blob/master/Client/UI/ElementStdBounds.cs ElementStdBounds] on Github.
+* <code>ElementBounds.Fixed(0, 0, 300, 300)</code>: Create a new bounds instance with fixedX/Y at 0/0 and a fixed widt/height of 300/300 pixels.
+* <code>CairoFont.WhiteDetailText()</code>: Create a new font configuration based on a often used size and color, in this case white with font size 14
+* <code>SingleComposer</code>: This property is defined in the <code>GuiDialog</code> class. Its a getter/setter to the <code>Composers</code> dictionary. It contains all the "windows" of this dialog which are then rendered / handled by this GuiDialog instance
+
+=== Second iteration: add title bar ===
+This is of course the absolute minimum example that will only show some text. Let's add a title bar and a dialog background:
+
+<syntaxhighlight lang="c#">
+private void SetupDialog()
+{
+    // Auto-sized dialog at the center of the screen
+    ElementBounds dialogBounds = ElementStdBounds.AutosizedMainDialog.WithAlignment(EnumDialogArea.CenterMiddle);
+
+    // Just a simple 300x100 pixel box with 40 pixels top spacing for the title bar
+    ElementBounds textBounds = ElementBounds.Fixed(0, 40, 300, 100);
+
+    // Background boundaries. Again, just make it fit it's child elements, then add the text as a child element
+    ElementBounds bgBounds = ElementBounds.Fill.WithFixedPadding(GuiStyle.ElementToDialogPadding);
+    bgBounds.BothSizing = ElementSizing.FitToChildren;
+    bgBounds.WithChildren(textBounds);
+
+    SingleComposer = capi.Gui.CreateCompo("myAwesomeDialog", dialogBounds)
+        .AddShadedDialogBG(bgBounds)
+        .AddDialogTitleBar("Heck yeah!", OnTitleBarCloseClicked)
+        .AddStaticText("This is a piece of text at the center of your screen - Enjoy!", CairoFont.WhiteDetailText(), textBounds)
+        .Compose()
+    ;
+}
+
+private void OnTitleBarCloseClicked()
+{
+    TryClose();
+}
+</syntaxhighlight>
+
+=== Final iteration: connect to hot key ===
+A simple standard dialog, triggered by the keyboard key 'U'
+
+<syntaxhighlight lang="c#">
+public class GuiDialogAnnoyingText : GuiDialog
+{
+    public override string ToggleKeyCombinationCode => "annoyingtextgui";
+
+    public GuiDialogAnnoyingText(ICoreClientAPI capi) : base(capi)
+    {
+        SetupDialog();
+    }
+
+    private void SetupDialog()
+    {
+        // Auto-sized dialog at the center of the screen
+        ElementBounds dialogBounds = ElementStdBounds.AutosizedMainDialog.WithAlignment(EnumDialogArea.CenterMiddle);
+
+        // Just a simple 300x300 pixel box
+        ElementBounds textBounds = ElementBounds.Fixed(0, 40, 300, 100);
+
+        // Background boundaries. Again, just make it fit it's child elements, then add the text as a child element
+        ElementBounds bgBounds = ElementBounds.Fill.WithFixedPadding(GuiStyle.ElementToDialogPadding);
+        bgBounds.BothSizing = ElementSizing.FitToChildren;
+        bgBounds.WithChildren(textBounds);
+
+        // Lastly, create the dialog
+        SingleComposer = capi.Gui.CreateCompo("myAwesomeDialog", dialogBounds)
+            .AddShadedDialogBG(bgBounds)
+            .AddDialogTitleBar("Heck yeah!", OnTitleBarCloseClicked)
+            .AddStaticText("This is a piece of text at the center of your screen - Enjoy!", CairoFont.WhiteDetailText(), textBounds)
+            .Compose()
+        ;
+    }
+
+    private void OnTitleBarCloseClicked()
+    {
+        TryClose();
+    }
+}
+
+public class AnnoyingTextSystem : ModSystem
+{
+    ICoreClientAPI capi;
+    GuiDialog dialog;
+
+    public override bool ShouldLoad(EnumAppSide forSide)
+    {
+        return forSide == EnumAppSide.Client;
+    }
+        
+    public override void StartClientSide(ICoreClientAPI api)
+    {
+        base.StartClientSide(api);
+
+        dialog = new GuiDialogAnnoyingText(api);
+
+        capi = api;
+        capi.Input.RegisterHotKey("annoyingtextgui", "Annoys you with annoyingly centered text", GlKeys.U, HotkeyType.GUIOrOtherControls);
+        capi.Input.SetHotKeyHandler("annoyingtextgui", ToggleGui);
+    }
+
+    private bool ToggleGui(KeyCombination comb)
+    {
+        if (dialog.IsOpened()) dialog.TryClose();
+        else dialog.TryOpen();
+
+        return true;
+    }
+}
+</syntaxhighlight>
+
+== Example - Scrolling ==
+A scrolling GUI requires:
+* A clip area where the scrolling content will appear (BeginClip / EndClip)
+* The scrollbar itself (AddVerticalScrollbar in the example below)
+* A call to GuiElementScrollbar.SetHeights() after the GUI dialog has been composed
+
+Here is a straightforward example of a scrolling GUI.
+
+<syntaxhighlight lang="c#">
+    public class DemoScrollingGui : GuiDialog
+    {
+        public override string ToggleKeyCombinationCode => "demoscrollgui";
+
+        public DemoScrollingGui(ICoreClientAPI capi) : base(capi)
+        {
+            SetupDialog();
+        }
+
+        private void SetupDialog()
+        {
+            int insetWidth = 900;
+            int insetHeight = 300;
+            int insetDepth = 3;
+            int rowHeight = 35;
+            int rowCount = 40;
+
+            // Auto-sized dialog at the center of the screen
+            ElementBounds dialogBounds = ElementStdBounds.AutosizedMainDialog.WithAlignment(EnumDialogArea.CenterMiddle);
+
+            // Bounds of main inset for scrolling content in the GUI
+            ElementBounds insetBounds = ElementBounds.Fixed(0, GuiStyle.TitleBarHeight, insetWidth, insetHeight);
+            ElementBounds scrollbarBounds = insetBounds.RightCopy().WithFixedWidth(20);
+
+            // Create child elements bounds for within the inset
+            ElementBounds clipBounds = insetBounds.ForkContainingChild(GuiStyle.HalfPadding, GuiStyle.HalfPadding, GuiStyle.HalfPadding, GuiStyle.HalfPadding);
+            ElementBounds containerBounds = insetBounds.ForkContainingChild(GuiStyle.HalfPadding, GuiStyle.HalfPadding, GuiStyle.HalfPadding, GuiStyle.HalfPadding);
+            ElementBounds containerRowBounds = ElementBounds.Fixed(0, 0, insetWidth, rowHeight);
+
+            // Dialog background bounds
+            ElementBounds bgBounds = ElementBounds.Fill
+                .WithFixedPadding(GuiStyle.ElementToDialogPadding)
+                .WithSizing(ElementSizing.FitToChildren)
+                .WithChildren(insetBounds, scrollbarBounds);
+
+            // Create the dialog
+            SingleComposer = capi.Gui.CreateCompo("demoScrollGui", dialogBounds)
+                .AddShadedDialogBG(bgBounds)
+                .AddDialogTitleBar("Scroll Me!", OnTitleBarCloseClicked)
+                .BeginChildElements()
+                    .AddInset(insetBounds, insetDepth)
+                    .BeginClip(clipBounds)
+                        .AddContainer(containerBounds, "scroll-content")
+                    .EndClip()
+                    .AddVerticalScrollbar(OnNewScrollbarValue, scrollbarBounds, "scrollbar")
+                .EndChildElements();
+
+            // Add desired scrollable content to the container
+            GuiElementContainer scrollArea = SingleComposer.GetContainer("scroll-content");
+            for (int i = 0; i < rowCount; i++)
+            {
+                scrollArea.Add(new GuiElementStaticText(capi, $"- Example Row {i+1} -", EnumTextOrientation.Center, containerRowBounds, CairoFont.WhiteSmallishText()));
+                containerRowBounds = containerRowBounds.BelowCopy();
+            }
+
+            // Compose the dialog
+            SingleComposer.Compose();
+
+            // After composing dialog, need to set the scrolling area heights to enable scroll behavior
+            float scrollVisibleHeight = (float)clipBounds.fixedHeight;
+            float scrollTotalHeight = rowHeight * rowCount;
+            SingleComposer.GetScrollbar("scrollbar").SetHeights(scrollVisibleHeight, scrollTotalHeight);
+
+        }
+
+        private void OnNewScrollbarValue(float value)
+        {
+            ElementBounds bounds = SingleComposer.GetContainer("scroll-content").Bounds;
+            bounds.fixedY = 5 - value;
+            bounds.CalcWorldBounds();
+        }
+
+        private void OnTitleBarCloseClicked()
+        {
+            TryClose();
+        }
+    }
+</syntaxhighlight>

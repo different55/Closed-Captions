@@ -7,6 +7,7 @@ namespace ClosedCaptions;
 public class CaptionsSystem : ModSystem
 {
     private static CaptionsDialog _dialog;
+    private static SettingsDialog _settings;
     public static CaptionsConfig Config;
     private static ICoreClientAPI _api;
     private static AssetCategory Category;
@@ -54,9 +55,12 @@ public class CaptionsSystem : ModSystem
     public static void Reload()
     {
         _dialog?.TryClose();
+        _settings?.TryClose();
         LoadConfig();
         if (!Config.Enabled) return;
         _dialog = new CaptionsDialog(_api);
         _dialog.TryOpen();
+        _settings = new SettingsDialog(_api);
+        _settings.TryOpen();
     }
 }
