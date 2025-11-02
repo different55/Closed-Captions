@@ -57,17 +57,17 @@ public class Caption
         if (name == null) name = id; // Unnamed sounds use ID as fallback.
         if (name == "") return; // Ignore empty stringed sounds.
 
-        var urgency = Urgency.Normal;
+        var urgency = AlertLevel.Normal;
         if (name.StartsWith('?')) name = name[1..];
         if (name.StartsWith('!'))
         {
             name = name[1..];
-            urgency = Urgency.Warning;
+            urgency = AlertLevel.Warning;
         }
         if (name.StartsWith('+'))
         {
             name = name[1..];
-            urgency = Urgency.Notice;
+            urgency = AlertLevel.Notice;
         }
 
         var position = sound.Position;
@@ -88,7 +88,7 @@ public class Caption
         AddSound(name, sound, audibility, _channelGuide.GetChannel(id), urgency);
     }
 
-    private static void AddSound(string name, SoundParams sound, float audibility, Channel channel, Urgency urgency)
+    private static void AddSound(string name, SoundParams sound, float audibility, Channel channel, AlertLevel urgency)
     {
         // Substitute audio description for a channel name.
         if (channel.Name == null) channel.Name = name;
@@ -97,15 +97,14 @@ public class Caption
         foreach (var caption in Captions)
         {
             // We only want to update this caption if it has the same name or if it's on the same channel.
-            if (caption.name != name && caption.channel != channel.Name) continue;
+            if (caption.name != name && caption.channel.Name != channel.Name) continue;
             caption.lastHeard = api.ElapsedMilliseconds;
 
-            if (channel.Priority < caption.priority ||
-                (channel.Priority == caption.priority && audibility > caption.audibility))
+            if (channel.Priority < caption.channel.Priority ||
+                (channel.Priority == caption.channel.Priority && audibility > caption.audibility))
             {
                 caption.name = name;
-                caption.channel = channel.Name;
-                caption.priority = channel.Priority;
+                caption.channel = channel;
                 caption.position = sound.Position;
                 caption.audibility = audibility;
                 caption.urgency = urgency;
@@ -119,8 +118,7 @@ public class Caption
         {
             lastHeard = api.ElapsedMilliseconds,
             name = name,
-            channel = channel.Name,
-            priority = channel.Priority,
+            channel = channel,
             position = sound.Position,
             audibility = audibility,
             urgency = urgency
@@ -130,13 +128,12 @@ public class Caption
     public long lastHeard;
     public double age => (api.ElapsedMilliseconds-lastHeard) / 1000.0;
     public string name;
-    public string channel;
-    public int priority;
+    public Channel channel;
     public Vec3f position;
     public float audibility;
-    public Urgency urgency = Urgency.Normal;
+    public AlertLevel urgency = AlertLevel.Normal;
 
-    public enum Urgency
+    public enum AlertLevel
     {
         Normal,
         Notice,

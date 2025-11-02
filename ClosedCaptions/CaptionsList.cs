@@ -96,7 +96,7 @@ public class CaptionsList : GuiElement
             var soundName = GetDisplayName(caption);
             
             // Modify colors for special sound types.
-            if (caption.urgency == Caption.Urgency.Warning)
+            if (caption.urgency == Caption.AlertLevel.Warning)
             {
                 fg = warning;
                 stroke = warning;
@@ -107,7 +107,7 @@ public class CaptionsList : GuiElement
                     bg = warning;
                 }
             }
-            else if (caption.urgency == Caption.Urgency.Notice)
+            else if (caption.urgency == Caption.AlertLevel.Notice)
             {
                 fg = notice;
                 stroke = notice;
@@ -189,8 +189,8 @@ public class CaptionsList : GuiElement
         if (!cfg.ShowSymbols) return caption.name;
         return caption.urgency switch
         {
-            Caption.Urgency.Warning => "! " + caption.name + " !",
-            Caption.Urgency.Notice => "+ " + caption.name + " +",
+            Caption.AlertLevel.Warning => "! " + caption.name + " !",
+            Caption.AlertLevel.Notice => "+ " + caption.name + " +",
             _ => caption.name
         };
     }
