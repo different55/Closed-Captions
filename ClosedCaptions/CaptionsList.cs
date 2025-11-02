@@ -8,9 +8,7 @@ namespace ClosedCaptions;
 
 public class CaptionsList : GuiElement
 {
-    private LoadedTexture textTexture;
-    private ImageSurface imageSurface;
-    private Context ctx;
+    private LoadedTexture texture;
     
     private CairoFont font;
 
@@ -29,13 +27,7 @@ public class CaptionsList : GuiElement
     private TextExtents fontMetrics;
     
     public CaptionsList(ICoreClientAPI capi, ElementBounds bounds) : base(capi, bounds) {
-        textTexture = new LoadedTexture(capi);
-        imageSurface = new ImageSurface(
-            Format.Argb32,
-            cfg.Width+2,
-            cfg.Height*cfg.MaxCaptions+2
-            );
-        ctx = genContext(imageSurface);
+        texture = new LoadedTexture(capi);
         
         font = CairoFont.WhiteMediumText().WithFont(cfg.Font).WithFontSize(cfg.FontSize);
         fontMetrics = font.GetTextExtents("Waves Crash");
@@ -44,27 +36,31 @@ public class CaptionsList : GuiElement
         notice = new Color(cfg.NoticeRed, cfg.NoticeGreen, cfg.NoticeBlue);
     }
     
-    public override void Dispose() {
-        textTexture?.Dispose();
-        imageSurface?.Dispose();
-        ctx?.Dispose();
-    }
-    
-    public override void ComposeElements(Context ctx, ImageSurface surface) {
-        font.SetupContext(ctx);
-        Bounds.CalcWorldBounds();
-        DrawCaptions(ctx);
-        generateTexture(imageSurface, ref textTexture);
+    public override void Dispose()
+    {
+        base.Dispose();
+        texture?.Dispose();
     }
     
     public override void RenderInteractiveElements(float deltaTime) {
         Caption.SyncCaptions();
-        DrawCaptions(ctx);
-        generateTexture(imageSurface, ref textTexture);
-        api.Render.Render2DTexturePremultipliedAlpha(textTexture.TextureId, (int)Bounds.renderX, (int)Bounds.renderY, (int)Bounds.InnerWidth, (int)Bounds.InnerHeight);
+        RenderTexture();
     }
     
-    private void DrawCaptions(Context ctx)
+    private void RenderTexture() {
+        var surface = new ImageSurface(Format.Argb32, cfg.Width+2, cfg.Height*cfg.MaxCaptions+2);
+        var ctx = genContext(surface);
+        
+        Bounds.CalcWorldBounds();
+        RenderCaptions(ctx);
+        generateTexture(surface, ref texture);
+        api.Render.Render2DTexturePremultipliedAlpha(texture.TextureId, (int)Bounds.renderX, (int)Bounds.renderY, (int)Bounds.InnerWidth, (int)Bounds.InnerHeight);
+        
+        ctx.Dispose();
+        surface.Dispose();
+    }
+    
+    private void RenderCaptions(Context ctx)
     {
         font.SetupContext(ctx);
         
@@ -162,24 +158,24 @@ public class CaptionsList : GuiElement
             // >>
             else if (direction > 3)
             {
-                DrawTriangle(ctx, 1+Math.Round(cfg.Width*.9+arrowWidth), y+midHeight, arrowWidth, arrowHeight);
-                DrawTriangle(ctx, 1+Math.Round(cfg.Width*.9+arrowWidth*.2), y+midHeight, arrowWidth, arrowHeight);
+                RenderTriangle(ctx, 1+Math.Round(cfg.Width*.9+arrowWidth), y+midHeight, arrowWidth, arrowHeight);
+                RenderTriangle(ctx, 1+Math.Round(cfg.Width*.9+arrowWidth*.2), y+midHeight, arrowWidth, arrowHeight);
             }
             // >
             else if (direction > 1)
             {
-                DrawTriangle(ctx, 1+Math.Round(cfg.Width*.9+arrowWidth*.2), y+midHeight, arrowWidth, arrowHeight);
+                RenderTriangle(ctx, 1+Math.Round(cfg.Width*.9+arrowWidth*.2), y+midHeight, arrowWidth, arrowHeight);
             }
             // <<
             else if (direction < -3)
             {
-                DrawTriangle(ctx, 1+Math.Round(cfg.Width*.1-arrowWidth), y+midHeight, -arrowWidth, arrowHeight);
-                DrawTriangle(ctx, 1+Math.Round(cfg.Width*.1-arrowWidth*.2), y+midHeight, -arrowWidth, arrowHeight);
+                RenderTriangle(ctx, 1+Math.Round(cfg.Width*.1-arrowWidth), y+midHeight, -arrowWidth, arrowHeight);
+                RenderTriangle(ctx, 1+Math.Round(cfg.Width*.1-arrowWidth*.2), y+midHeight, -arrowWidth, arrowHeight);
             }
             // <
             else if (direction < -1)
             {
-                DrawTriangle(ctx, 1+Math.Round(cfg.Width*.1-arrowWidth*.55), y+midHeight, -arrowWidth, arrowHeight);
+                RenderTriangle(ctx, 1+Math.Round(cfg.Width*.1-arrowWidth*.55), y+midHeight, -arrowWidth, arrowHeight);
             }
         }
     }
@@ -195,7 +191,7 @@ public class CaptionsList : GuiElement
         };
     }
 
-    private void DrawTriangle(Context ctx, double x, double y, double w, double h)
+    private void RenderTriangle(Context ctx, double x, double y, double w, double h)
     {
         ctx.NewPath();
         ctx.MoveTo(x, y);
