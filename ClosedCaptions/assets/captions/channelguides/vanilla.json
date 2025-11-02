@@ -101,5 +101,83 @@
   "effect/tempstab-verylow": {
     "name": "time",
     "priority": 3
+  },
+  
+  "walk/cloth": {
+    "name": "movement",
+    "priority": 1
+  },
+  "walk/deepsnow": {
+    "name": "movement",
+    "priority": 1
+  },
+  "walk/default": {
+    "name": "movement",
+    "priority": 1
+  },
+  "walk/glass": {
+    "name": "movement",
+    "priority": 1
+  },
+  "walk/grass": {
+    "name": "movement",
+    "priority": 1
+  },
+  "walk/gravel": {
+    "name": "movement",
+    "priority": 1
+  },
+  "walk/ice": {
+    "name": "movement",
+    "priority": 1
+  },
+  "walk/lava": {
+    "name": "movement",
+    "priority": 1
+  },
+  "walk/sand": {
+    "name": "movement",
+    "priority": 1
+  },
+  "walk/sludge": {
+    "name": "movement",
+    "priority": 1
+  },
+  "walk/snow": {
+    "name": "movement",
+    "priority": 1
+  },
+  "walk/stone": {
+    "name": "movement",
+    "priority": 1
+  },
+  "walk/water": {
+    "name": "movement",
+    "priority": 1
+  },
+  "walk/wood": {
+    "name": "movement",
+    "priority": 1
+  },
+  
+  "wearable/brigandine": {
+    "name": "clothes",
+    "priority": 1
+  },
+  "wearable/chain": {
+    "name": "clothes",
+    "priority": 1
+  },
+  "wearable/leather": {
+    "name": "clothes",
+    "priority": 1
+  },
+  "wearable/plate": {
+    "name": "clothes",
+    "priority": 1
+  },
+  "wearable/scale": {
+    "name": "clothes",
+    "priority": 1
   }
 }
