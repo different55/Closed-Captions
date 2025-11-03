@@ -46,6 +46,9 @@ public class Caption
         // Under what conditions would this be null? During startup?
         var player = api.World.Player;
         if (player == null) return;
+        
+        // Ignore music
+        if (sound.SoundType == EnumSoundType.Music) return;
 
         // Calculate ID, remove sounds/ prefix, .ogg suffix, and trailing digits.
         var id = sound.Location.Path;
