@@ -6,21 +6,21 @@ namespace ClosedCaptions;
 
 public class CaptionsSystem : ModSystem
 {
-    private static CaptionsDialog dialog;
-    public static CaptionsConfig config;
-    private static ICoreClientAPI api;
+    private static CaptionsDialog _dialog;
+    public static CaptionsConfig Config;
+    private static ICoreClientAPI _api;
     
     public override void StartClientSide(ICoreClientAPI capi)
     {
         base.StartClientSide(capi);
-        api = capi;
+        _api = capi;
         LoadConfig();
         
-        Caption.Initialize(api);
+        Caption.Initialize(_api);
         
-        if (!config.Enabled) return;
+        if (!Config.Enabled) return;
          
-        api.Event.IsPlayerReady += (ref EnumHandling handling) =>
+        _api.Event.IsPlayerReady += (ref EnumHandling _) =>
         {
             Reload();
             return true;
@@ -31,27 +31,25 @@ public class CaptionsSystem : ModSystem
     {
         try
         {
-            config = api.LoadModConfig<CaptionsConfig>("captions.json");
-            if (config == null)
-            {
-                config = new CaptionsConfig();
-                api.StoreModConfig(config, "captions.json");
-            }
+            Config = _api.LoadModConfig<CaptionsConfig>("captions.json");
+            if (Config != null) return;
+            Config = new CaptionsConfig();
+            _api.StoreModConfig(Config, "captions.json");
         }
         catch (Exception e)
         {
-            api.Logger.Error("Could not load config, using defaults.");
-            api.Logger.Error(e.ToString());
-            config = new CaptionsConfig();
+            _api.Logger.Error("Could not load config, using defaults.");
+            _api.Logger.Error(e.ToString());
+            Config = new CaptionsConfig();
         }
     }
 
     public static void Reload()
     {
-        dialog?.TryClose();
+        _dialog?.TryClose();
         LoadConfig();
-        if (!config.Enabled) return;
-        dialog = new CaptionsDialog(api);
-        dialog.TryOpen();
+        if (!Config.Enabled) return;
+        _dialog = new CaptionsDialog(_api);
+        _dialog.TryOpen();
     }
 }

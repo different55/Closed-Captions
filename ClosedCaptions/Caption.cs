@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Vintagestory.API.Client;
@@ -10,41 +9,41 @@ namespace ClosedCaptions;
 
 public class Caption
 {
-    private static double AudibilityThreshold = 0.1;
+    private const double AudibilityThreshold = 0.1;
     private static CaptionsChannelGuide _channelGuide;
-    private static ICoreClientAPI api;
-    private static Queue<ILoadedSound> ActiveSounds;
+    private static ICoreClientAPI _api;
+    private static Queue<ILoadedSound> _activeSounds;
     public static List<Caption> Captions = [];
 
     public static void Initialize(ICoreClientAPI api)
     {
-        Caption.api = api;
+        _api = api;
 
         _channelGuide = new CaptionsChannelGuide(api);
         
-        FieldInfo field = api.World.GetType().GetField("ActiveSounds", BindingFlags.NonPublic | BindingFlags.Instance);
-        ActiveSounds = (Queue<ILoadedSound>)field.GetValue(api.World);
+        var field = api.World.GetType().GetField("ActiveSounds", BindingFlags.NonPublic | BindingFlags.Instance);
+        _activeSounds = (Queue<ILoadedSound>)field?.GetValue(api.World);
     }
     
     // Synchronizes the internal caption list with the currently active sounds.
     public static void SyncCaptions()
     {
         // Update captions with fresh sound data.
-        foreach (var sound in ActiveSounds)
+        foreach (var sound in _activeSounds)
         {
             if (!sound.IsPlaying) continue;
             ProcessSound(sound.Params);
         }
         
         // Prune old captions.
-        Captions.RemoveAll(caption => caption.age > CaptionsSystem.config.Duration);
+        Captions.RemoveAll(caption => caption.Age > CaptionsSystem.Config.Duration);
     }
 
     private static void ProcessSound(SoundParams sound)
     {
         // Unknown condition yoinked without understanding from SubtitlesMod.
         // Under what conditions would this be null? During startup?
-        var player = api.World.Player;
+        var player = _api.World.Player;
         if (player == null) return;
         
         // Ignore music
@@ -56,26 +55,26 @@ public class Caption
         if (id.EndsWith(".ogg")) id = id[..^4];
         id = id.TrimEnd('0', '1', '2', '3', '4', '5', '6', '7', '8', '9');
 
-        var name = Lang.GetIfExists("captions:" + id);
-        if (name == null) name = id; // Unnamed sounds use ID as fallback.
+        // Unnamed sounds use ID as fallback.
+        var name = Lang.GetIfExists("captions:" + id) ?? id;
         if (name == "") return; // Ignore empty stringed sounds.
 
-        var urgency = AlertLevel.Normal;
+        var alertLevel = AlertLevel.Normal;
         if (name.StartsWith('?')) name = name[1..];
         if (name.StartsWith('!'))
         {
             name = name[1..];
-            urgency = AlertLevel.Warning;
+            alertLevel = AlertLevel.Warning;
         }
         if (name.StartsWith('+'))
         {
             name = name[1..];
-            urgency = AlertLevel.Notice;
+            alertLevel = AlertLevel.Notice;
         }
         if (name.StartsWith('~'))
         {
             name = name[1..];
-            urgency = AlertLevel.Environmental;
+            alertLevel = AlertLevel.Environmental;
         }
 
         var position = sound.Position;
@@ -93,29 +92,29 @@ public class Caption
         var audibility = (1 - (dist / sound.Range)) * sound.Volume;
         if (audibility < AudibilityThreshold) return;
         
-        AddSound(name, sound, audibility, _channelGuide.GetChannel(id), urgency);
+        AddSound(name, sound, audibility, _channelGuide.GetChannel(id), alertLevel);
     }
 
-    private static void AddSound(string name, SoundParams sound, float audibility, Channel channel, AlertLevel urgency)
+    private static void AddSound(string name, SoundParams sound, float audibility, Channel channel, AlertLevel alertLevel)
     {
         // Substitute audio description for a channel name.
-        if (channel.Name == null) channel.Name = name;
+        channel.Name ??= name;
         
         // Refresh existing slot if it's already present.
         foreach (var caption in Captions)
         {
-            // We only want to update this caption if it has the same name or if it's on the same channel.
-            if (caption.name != name && caption.channel.Name != channel.Name) continue;
-            caption.lastHeard = api.ElapsedMilliseconds;
+            // Only update this caption if it has the same name or if it's on the same channel.
+            if (caption.Name != name && caption.Channel.Name != channel.Name) continue;
+            caption.LastHeard = _api.ElapsedMilliseconds;
 
-            if (channel.Priority < caption.channel.Priority ||
-                (channel.Priority == caption.channel.Priority && audibility > caption.audibility))
+            if (channel.Priority < caption.Channel.Priority ||
+                (channel.Priority == caption.Channel.Priority && audibility > caption.Audibility))
             {
-                caption.name = name;
-                caption.channel = channel;
-                caption.position = sound.Position;
-                caption.audibility = audibility;
-                caption.urgency = urgency;
+                caption.Name = name;
+                caption.Channel = channel;
+                caption.Position = sound.Position;
+                caption.Audibility = audibility;
+                caption.AlertLevel = alertLevel;
             }
             
             return;
@@ -124,28 +123,28 @@ public class Caption
         // No existing caption, add a new one.
         Captions.Add(new Caption
         {
-            lastHeard = api.ElapsedMilliseconds,
-            name = name,
-            channel = channel,
-            position = sound.Position,
-            audibility = audibility,
-            urgency = urgency
+            LastHeard = _api.ElapsedMilliseconds,
+            Name = name,
+            Channel = channel,
+            Position = sound.Position,
+            Audibility = audibility,
+            AlertLevel = alertLevel
         });
     }
     
-    public long lastHeard;
-    public double age => (api.ElapsedMilliseconds-lastHeard) / 1000.0;
-    public string name;
-    public Channel channel;
-    public Vec3f position;
-    public float audibility;
-    public AlertLevel urgency = AlertLevel.Normal;
+    public long LastHeard;
+    public double Age => (_api.ElapsedMilliseconds-LastHeard) / 1000.0;
+    public string Name;
+    public Channel Channel;
+    public Vec3f Position;
+    public float Audibility;
+    public AlertLevel AlertLevel = AlertLevel.Normal;
+}
 
-    public enum AlertLevel
-    {
-        Environmental,
-        Normal,
-        Notice,
-        Warning
-    }
+public enum AlertLevel
+{
+    Environmental,
+    Normal,
+    Notice,
+    Warning
 }

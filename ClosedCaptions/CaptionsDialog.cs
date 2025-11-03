@@ -4,12 +4,12 @@ namespace ClosedCaptions;
 
 public class CaptionsDialog : HudElement
 {
-    public CaptionsList captionsList;
+    public CaptionsList CaptionsList;
     
     public CaptionsDialog(ICoreClientAPI capi) : base(capi)
     {
-        var cfg = CaptionsSystem.config;
-        ElementBounds dialogBounds = ElementBounds.FixedSize(
+        var cfg = CaptionsSystem.Config;
+        var dialogBounds = ElementBounds.FixedSize(
             cfg.Width+2,
             cfg.Height*cfg.MaxCaptions+2
             )
@@ -17,13 +17,13 @@ public class CaptionsDialog : HudElement
             .WithFixedPadding(cfg.Padding);
         SingleComposer = capi.Gui.CreateCompo("captions", dialogBounds);
         
-        ElementBounds listBounds = ElementBounds.FixedSize(
+        var listBounds = ElementBounds.FixedSize(
             cfg.Width+2,
             cfg.Height*cfg.MaxCaptions+2
             );
         dialogBounds.WithChild(listBounds);
-        captionsList = new CaptionsList(SingleComposer.Api, listBounds);
-        SingleComposer.AddInteractiveElement(captionsList, "captionsList");
+        CaptionsList = new CaptionsList(SingleComposer.Api, listBounds);
+        SingleComposer.AddInteractiveElement(CaptionsList, "captionsList");
         
         SingleComposer.Compose(false);
     }

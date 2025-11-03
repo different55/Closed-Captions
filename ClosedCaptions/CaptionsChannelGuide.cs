@@ -7,24 +7,24 @@ namespace ClosedCaptions;
 
 public class CaptionsChannelGuide
 {
-    private Dictionary<string, Channel> channels = null;
-    private ICoreAPI api;
+    private Dictionary<string, Channel> _channels;
+    private ICoreAPI _api;
     public CaptionsChannelGuide(ICoreAPI api)
     {
-        this.api = api;
+        _api = api;
         ReloadChannels();
     }
     public void ReloadChannels()
     {
-        var guides = api.World.AssetManager.GetMany<Dictionary<string, Channel>>(api.Logger, "channelguides/", null);
-        channels = new Dictionary<string, Channel>();
+        var guides = _api.World.AssetManager.GetMany<Dictionary<string, Channel>>(_api.Logger, "channelguides/");
+        _channels = new Dictionary<string, Channel>();
         foreach (var g in guides)
         {
-            g.Value.ToList().ForEach(c => channels[c.Key] = c.Value);
+            g.Value.ToList().ForEach(c => _channels[c.Key] = c.Value);
         }
     }
     public Channel GetChannel(string id)
     {
-        return channels.GetValueOrDefault(id);
+        return _channels.GetValueOrDefault(id);
     }
 }

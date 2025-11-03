@@ -8,38 +8,38 @@ namespace ClosedCaptions;
 
 public class CaptionsList : GuiElement
 {
-    private LoadedTexture texture;
+    private LoadedTexture _texture;
     
-    private CairoFont font;
+    private CairoFont _font;
 
-    private CaptionsConfig cfg => CaptionsSystem.config;
-    private List<Caption> captions => Caption.Captions;
+    private static CaptionsConfig Cfg => CaptionsSystem.Config;
+    private static List<Caption> Captions => Caption.Captions;
 
     private bool GrowUp => 
-        cfg.Position == EnumDialogArea.LeftBottom ||
-        cfg.Position == EnumDialogArea.CenterBottom ||
-        cfg.Position == EnumDialogArea.RightBottom ||
-        cfg.Position == EnumDialogArea.FixedBottom;
+        Cfg.Position == EnumDialogArea.LeftBottom ||
+        Cfg.Position == EnumDialogArea.CenterBottom ||
+        Cfg.Position == EnumDialogArea.RightBottom ||
+        Cfg.Position == EnumDialogArea.FixedBottom;
 
-    private Color warning;
-    private Color notice;
+    private Color _warning;
+    private Color _notice;
 
-    private TextExtents fontMetrics;
+    private TextExtents _fontMetrics;
     
     public CaptionsList(ICoreClientAPI capi, ElementBounds bounds) : base(capi, bounds) {
-        texture = new LoadedTexture(capi);
+        _texture = new LoadedTexture(capi);
         
-        font = CairoFont.WhiteMediumText().WithFont(cfg.Font).WithFontSize(cfg.FontSize);
-        fontMetrics = font.GetTextExtents("Waves Crash");
+        _font = CairoFont.WhiteMediumText().WithFont(Cfg.Font).WithFontSize(Cfg.FontSize);
+        _fontMetrics = _font.GetTextExtents("Waves Crash");
         
-        warning = new Color(cfg.WarningRed, cfg.WarningGreen, cfg.WarningBlue);
-        notice = new Color(cfg.NoticeRed, cfg.NoticeGreen, cfg.NoticeBlue);
+        _warning = new Color(Cfg.WarningRed, Cfg.WarningGreen, Cfg.WarningBlue);
+        _notice = new Color(Cfg.NoticeRed, Cfg.NoticeGreen, Cfg.NoticeBlue);
     }
     
     public override void Dispose()
     {
         base.Dispose();
-        texture?.Dispose();
+        _texture?.Dispose();
     }
     
     public override void RenderInteractiveElements(float deltaTime) {
@@ -48,13 +48,13 @@ public class CaptionsList : GuiElement
     }
     
     private void RenderTexture() {
-        var surface = new ImageSurface(Format.Argb32, cfg.Width+2, cfg.Height*cfg.MaxCaptions+2);
+        var surface = new ImageSurface(Format.Argb32, Cfg.Width+2, Cfg.Height*Cfg.MaxCaptions+2);
         var ctx = genContext(surface);
         
         Bounds.CalcWorldBounds();
         RenderCaptions(ctx);
-        generateTexture(surface, ref texture);
-        api.Render.Render2DTexturePremultipliedAlpha(texture.TextureId, (int)Bounds.renderX, (int)Bounds.renderY, (int)Bounds.InnerWidth, (int)Bounds.InnerHeight);
+        generateTexture(surface, ref _texture);
+        api.Render.Render2DTexturePremultipliedAlpha(_texture.TextureId, (int)Bounds.renderX, (int)Bounds.renderY, (int)Bounds.InnerWidth, (int)Bounds.InnerHeight);
         
         ctx.Dispose();
         surface.Dispose();
@@ -62,51 +62,51 @@ public class CaptionsList : GuiElement
     
     private void RenderCaptions(Context ctx)
     {
-        font.SetupContext(ctx);
+        _font.SetupContext(ctx);
         
         ctx.SetSourceRGB(0, 0, 0);
         ctx.Operator = Operator.Clear;
         ctx.Paint();
         ctx.Operator = Operator.Over;
         
-        double y = (GrowUp) ? cfg.Height * cfg.MaxCaptions : -cfg.Height;
+        double y = (GrowUp) ? Cfg.Height * Cfg.MaxCaptions : -Cfg.Height;
         var playerPos = api.World.Player.Entity.Pos;
         
-        var midHeight = cfg.Height/2;
-        var arrowHeight = cfg.Height - 8;
-        var arrowWidth = cfg.Height/2 - 2;
+        var midHeight = Cfg.Height/2;
+        var arrowHeight = Cfg.Height - 8;
+        var arrowWidth = Cfg.Height/2 - 2;
         
-        foreach (var caption in captions)
+        foreach (var caption in Captions)
         {
-            y -= (GrowUp) ? cfg.Height : -cfg.Height;
+            y -= (GrowUp) ? Cfg.Height : -Cfg.Height;
         
-            var brightness = ((1 - ((caption.age - cfg.Duration + cfg.FadeDuration) / cfg.FadeDuration)) * Math.Max(1, caption.audibility) / 2 + 0.5);
+            var brightness = ((1 - ((caption.Age - Cfg.Duration + Cfg.FadeDuration) / Cfg.FadeDuration)) * Math.Max(1, caption.Audibility) / 2 + 0.5);
 
             var bg = new Color(0, 0, 0, 1);
             var fg = new Color(1, 1, 1, 1);
             var stroke = new Color(0.25, 0.25, 0.25, 1);
-            var bgBrightness = (cfg.BackgroundOpacity * 0.3333) + (brightness * cfg.BackgroundOpacity * 0.6667);
-            var fgBrightness = (cfg.TextOpacity * 0.5) + (brightness * cfg.TextOpacity * 0.5);
+            var bgBrightness = (Cfg.BackgroundOpacity * 0.3333) + (brightness * Cfg.BackgroundOpacity * 0.6667);
+            var fgBrightness = (Cfg.TextOpacity * 0.5) + (brightness * Cfg.TextOpacity * 0.5);
 
             // Get display name, stripping special characters and adding indicators if ShowSymbols is enabled.
             var soundName = GetDisplayName(caption);
             
             // Modify colors for special sound types.
-            if (caption.urgency == Caption.AlertLevel.Warning)
+            if (caption.AlertLevel == AlertLevel.Warning)
             {
-                fg = warning;
-                stroke = warning;
-                if (cfg.InvertedWarnings)
+                fg = _warning;
+                stroke = _warning;
+                if (Cfg.InvertedWarnings)
                 {
                     fg = bg;
                     stroke = bg;
-                    bg = warning;
+                    bg = _warning;
                 }
             }
-            else if (caption.urgency == Caption.AlertLevel.Notice)
+            else if (caption.AlertLevel == AlertLevel.Notice)
             {
-                fg = notice;
-                stroke = notice;
+                fg = _notice;
+                stroke = _notice;
             }
             
             // Set alpha values.
@@ -116,26 +116,26 @@ public class CaptionsList : GuiElement
             
             // Draw background
             ctx.SetSourceColor(bg);
-            ctx.Rectangle(2, y+1, cfg.Width-2, cfg.Height-2);
+            ctx.Rectangle(2, y+1, Cfg.Width-2, Cfg.Height-2);
             ctx.Fill();
             
             // Draw stroke
             ctx.SetSourceColor(stroke);
-            ctx.Rectangle(2, y+1, cfg.Width-2, cfg.Height-2);
+            ctx.Rectangle(2, y+1, Cfg.Width-2, Cfg.Height-2);
             ctx.LineWidth = 1.0;
             ctx.Stroke();
             
             // Draw text
             ctx.SetSourceColor(fg);
-            var textWidth = font.GetTextExtents(soundName).Width;
-            ctx.MoveTo(cfg.Width/2 - (textWidth/2), y + midHeight + (fontMetrics.Height/2 - (fontMetrics.Height + fontMetrics.YBearing)));
+            var textWidth = _font.GetTextExtents(soundName).Width;
+            ctx.MoveTo(Cfg.Width/2.0 - (textWidth/2), y + midHeight + (_fontMetrics.Height/2 - (_fontMetrics.Height + _fontMetrics.YBearing)));
             ctx.ShowText(soundName);
             
             // Skip drawing arrows for positionless sounds.
-            if (caption.position == null || caption.position.IsZero) continue;
+            if (caption.Position == null || caption.Position.IsZero) continue;
             
-            var dist = caption.position.DistanceTo(playerPos.XYZFloat);
-            var yaw = Math.Atan2(caption.position.Z - playerPos.Z, caption.position.X - playerPos.X);
+            var dist = caption.Position.DistanceTo(playerPos.XYZFloat);
+            var yaw = Math.Atan2(caption.Position.Z - playerPos.Z, caption.Position.X - playerPos.X);
             
             // Skip drawing arrows for sounds that are too close.
             if (dist < 1.5) continue;
@@ -149,45 +149,45 @@ public class CaptionsList : GuiElement
             if (Math.Abs(direction) > 6)
             {
                 ctx.NewPath();
-                ctx.Arc(1+cfg.Width*.1, y+midHeight, cfg.Height/8, 0, GameMath.TWOPI);
+                ctx.Arc(1+Cfg.Width*.1, y+midHeight, Cfg.Height/8.0, 0, GameMath.TWOPI);
                 ctx.Fill();
                 ctx.NewPath();
-                ctx.Arc(1+cfg.Width*.9, y+midHeight, cfg.Height/8, 0, GameMath.TWOPI);
+                ctx.Arc(1+Cfg.Width*.9, y+midHeight, Cfg.Height/8.0, 0, GameMath.TWOPI);
                 ctx.Fill();
             }
             // >>
             else if (direction > 3)
             {
-                RenderTriangle(ctx, 1+Math.Round(cfg.Width*.9+arrowWidth), y+midHeight, arrowWidth, arrowHeight);
-                RenderTriangle(ctx, 1+Math.Round(cfg.Width*.9+arrowWidth*.2), y+midHeight, arrowWidth, arrowHeight);
+                RenderTriangle(ctx, 1+Math.Round(Cfg.Width*.9+arrowWidth), y+midHeight, arrowWidth, arrowHeight);
+                RenderTriangle(ctx, 1+Math.Round(Cfg.Width*.9+arrowWidth*.2), y+midHeight, arrowWidth, arrowHeight);
             }
             // >
             else if (direction > 1)
             {
-                RenderTriangle(ctx, 1+Math.Round(cfg.Width*.9+arrowWidth*.2), y+midHeight, arrowWidth, arrowHeight);
+                RenderTriangle(ctx, 1+Math.Round(Cfg.Width*.9+arrowWidth*.2), y+midHeight, arrowWidth, arrowHeight);
             }
             // <<
             else if (direction < -3)
             {
-                RenderTriangle(ctx, 1+Math.Round(cfg.Width*.1-arrowWidth), y+midHeight, -arrowWidth, arrowHeight);
-                RenderTriangle(ctx, 1+Math.Round(cfg.Width*.1-arrowWidth*.2), y+midHeight, -arrowWidth, arrowHeight);
+                RenderTriangle(ctx, 1+Math.Round(Cfg.Width*.1-arrowWidth), y+midHeight, -arrowWidth, arrowHeight);
+                RenderTriangle(ctx, 1+Math.Round(Cfg.Width*.1-arrowWidth*.2), y+midHeight, -arrowWidth, arrowHeight);
             }
             // <
             else if (direction < -1)
             {
-                RenderTriangle(ctx, 1+Math.Round(cfg.Width*.1-arrowWidth*.55), y+midHeight, -arrowWidth, arrowHeight);
+                RenderTriangle(ctx, 1+Math.Round(Cfg.Width*.1-arrowWidth*.55), y+midHeight, -arrowWidth, arrowHeight);
             }
         }
     }
 
     private string GetDisplayName(Caption caption)
     {
-        if (!cfg.ShowSymbols) return caption.name;
-        return caption.urgency switch
+        if (!Cfg.ShowSymbols) return caption.Name;
+        return caption.AlertLevel switch
         {
-            Caption.AlertLevel.Warning => "! " + caption.name + " !",
-            Caption.AlertLevel.Notice => "+ " + caption.name + " +",
-            _ => caption.name
+            AlertLevel.Warning => "! " + caption.Name + " !",
+            AlertLevel.Notice => "+ " + caption.Name + " +",
+            _ => caption.Name
         };
     }
 
