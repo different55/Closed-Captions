@@ -91,37 +91,11 @@ public class Caption
         // Ignore sounds that are out of earshot.
         var audibility = (1 - (dist / sound.Range)) * sound.Volume;
         if (audibility < AudibilityThreshold) return;
-        
-        AddSound(name, sound, audibility, _channelGuide.GetChannel(id), alertLevel);
-    }
 
-    private static void AddSound(string name, SoundParams sound, float audibility, Channel channel, AlertLevel alertLevel)
-    {
-        // Substitute audio description for a channel name.
+
+        var channel = _channelGuide.GetChannel(id);
         channel.Name ??= name;
-        
-        // Refresh existing slot if it's already present.
-        foreach (var caption in Captions)
-        {
-            // Only update this caption if it has the same name or if it's on the same channel.
-            if (caption.Name != name && caption.Channel.Name != channel.Name) continue;
-            caption.LastHeard = _api.ElapsedMilliseconds;
-
-            if (channel.Priority < caption.Channel.Priority ||
-                (channel.Priority == caption.Channel.Priority && audibility > caption.Audibility))
-            {
-                caption.Name = name;
-                caption.Channel = channel;
-                caption.Position = sound.Position;
-                caption.Audibility = audibility;
-                caption.AlertLevel = alertLevel;
-            }
-            
-            return;
-        }
-        
-        // No existing caption, add a new one.
-        Captions.Add(new Caption
+        AddCaption(new Caption
         {
             LastHeard = _api.ElapsedMilliseconds,
             Name = name,
@@ -130,6 +104,32 @@ public class Caption
             Audibility = audibility,
             AlertLevel = alertLevel
         });
+    }
+
+    private static void AddCaption(Caption newCaption)
+    {
+        // Refresh existing slot if it's already present.
+        foreach (var oldCaption in Captions)
+        {
+            // Only update this caption if it has the same name or if it's on the same channel.
+            if (oldCaption.Name != newCaption.Name && oldCaption.Channel.Name != newCaption.Channel.Name) continue;
+            oldCaption.LastHeard = newCaption.LastHeard;
+
+            if (newCaption.Channel.Priority < oldCaption.Channel.Priority ||
+                (newCaption.Channel.Priority == oldCaption.Channel.Priority && newCaption.Audibility > oldCaption.Audibility))
+            {
+                oldCaption.Name = newCaption.Name;
+                oldCaption.Channel = newCaption.Channel;
+                oldCaption.Position = newCaption.Position;
+                oldCaption.Audibility = newCaption.Audibility;
+                oldCaption.AlertLevel = newCaption.AlertLevel;
+            }
+            
+            return;
+        }
+        
+        // No existing caption, add a new one.
+        Captions.Add(newCaption);
     }
     
     public long LastHeard;
