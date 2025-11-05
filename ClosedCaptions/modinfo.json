@@ -7,7 +7,7 @@
     ],
     "description": "Add closed captions for sound effects.",
     "side": "Client",
-    "version": "0.5.0",
+    "version": "0.5.1",
     "dependencies": {
         "game": ""
     }
