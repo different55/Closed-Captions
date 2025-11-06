@@ -1,0 +1,57 @@
+{
+  "sounds/creature/pantherinae/unciaroar": {
+    "channel": "",
+    "priority": 1,
+    "tags": ["warning"]
+  },
+  "sounds/creature/pantherinae/tigrisroar": {
+    "channel": "",
+    "priority": 1,
+    "tags": ["warning"]
+  },
+  "sounds/creature/pantherinae/spelaearoar": {
+    "channel": "",
+    "priority": 1,
+    "tags": ["warning"]
+  },
+  "sounds/creature/pantherinae/pardusroar": {
+    "channel": "",
+    "priority": 1,
+    "tags": ["warning"]
+  },
+  "sounds/creature/pantherinae/pantheraidle": {
+    "channel": "",
+    "priority": 1,
+    "tags": ["warning"]
+  },
+  "sounds/creature/pantherinae/pantheracharge": {
+    "channel": "",
+    "priority": 1,
+    "tags": ["warning"]
+  },
+  "sounds/creature/pantherinae/oncaroar": {
+    "channel": "",
+    "priority": 1,
+    "tags": ["warning"]
+  },
+  "sounds/creature/pantherinae/neofelisroar": {
+    "channel": "",
+    "priority": 1,
+    "tags": ["warning"]
+  },
+  "sounds/creature/pantherinae/lick": {
+    "channel": "",
+    "priority": 1,
+    "tags": ["warning"]
+  },
+  "sounds/creature/pantherinae/leoroar": {
+    "channel": "",
+    "priority": 1,
+    "tags": ["warning"]
+  },
+  "sounds/creature/pantherinae/atroxroar": {
+    "channel": "",
+    "priority": 1,
+    "tags": ["warning"]
+  }
+}

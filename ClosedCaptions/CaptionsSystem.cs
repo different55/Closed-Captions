@@ -9,6 +9,13 @@ public class CaptionsSystem : ModSystem
     private static CaptionsDialog _dialog;
     public static CaptionsConfig Config;
     private static ICoreClientAPI _api;
+    private static AssetCategory Category;
+
+    public override void StartPre(ICoreAPI api)
+    {
+        base.StartPre(api);
+        Category = new AssetCategory("captions", false, EnumAppSide.Client);
+    }
     
     public override void StartClientSide(ICoreClientAPI capi)
     {

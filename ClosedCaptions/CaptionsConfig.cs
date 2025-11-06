@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using Vintagestory.API.Client;
@@ -11,6 +12,8 @@ public class CaptionsConfig
     public bool ShowSymbols = false;
     [Description("Make warnings use a bright background with dark text.")]
     public bool InvertedWarnings = false;
+    [Description("Which types of captions to ignore. Normal tags are \"player\", \"ambient\", \"warning\", and \"notice\".")]
+    public List<string> IgnoredTags = [];
     [Description("How long to persist captions after the sound stops.")]
     [Range(0, 10)]
     public float Duration = 4.0f;
@@ -30,7 +33,7 @@ public class CaptionsConfig
     [Description("Set the height of each caption line in pixels.")]
     [Category("Position/Size")]
     [Range(16, 64)]
-    public int Height = 34;
+    public int Height = 36;
     [Description("Set the padding between the captions box and the screen edges in pixels.")]
     [Category("Position/Size")]
     [Range(0, 64)]

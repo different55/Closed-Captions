@@ -1,16 +1,17 @@
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using Vintagestory.API.Client;
 using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
-using Channel = (string Name, int Priority);
 
 namespace ClosedCaptions;
 
 public class Caption
 {
     private const double AudibilityThreshold = 0.1;
-    private static CaptionsChannelGuide _channelGuide;
+    private static Dictionary<string, LoadedCaptionData> _metadata;
     private static ICoreClientAPI _api;
     private static Queue<ILoadedSound> _activeSounds;
     public static List<Caption> Captions = [];
@@ -18,11 +19,25 @@ public class Caption
     public static void Initialize(ICoreClientAPI api)
     {
         _api = api;
-
-        _channelGuide = new CaptionsChannelGuide(api);
+        
+        ReloadMetadata();
         
         var field = api.World.GetType().GetField("ActiveSounds", BindingFlags.NonPublic | BindingFlags.Instance);
         _activeSounds = (Queue<ILoadedSound>)field?.GetValue(api.World);
+    }
+
+    // Reloads caption metadata from assets.
+    public static void ReloadMetadata()
+    {
+        var dataFiles = _api.World.AssetManager.GetMany<Dictionary<string, LoadedCaptionData>>(_api.Logger, "captions/");
+        _metadata = new Dictionary<string, LoadedCaptionData>();
+        foreach (var dataFile in dataFiles)
+            dataFile.Value.ToList().ForEach(i => _metadata[i.Key] = i.Value);
+    }
+
+    private static LoadedCaptionData GetData(string id)
+    {
+        return _metadata.GetValueOrDefault(id) ?? new LoadedCaptionData();
     }
     
     // Synchronizes the internal caption list with the currently active sounds.
@@ -57,25 +72,7 @@ public class Caption
 
         // Unnamed sounds use ID as fallback.
         var name = Lang.GetIfExists("captions:" + id) ?? id;
-        if (name == "") return; // Ignore empty stringed sounds.
-
-        var alertLevel = AlertLevel.Normal;
-        if (name.StartsWith('?')) name = name[1..];
-        if (name.StartsWith('!'))
-        {
-            name = name[1..];
-            alertLevel = AlertLevel.Warning;
-        }
-        if (name.StartsWith('+'))
-        {
-            name = name[1..];
-            alertLevel = AlertLevel.Notice;
-        }
-        if (name.StartsWith('~'))
-        {
-            name = name[1..];
-            alertLevel = AlertLevel.Environmental;
-        }
+        if (name == "") return; // Ignore empty-stringed sounds.
 
         var position = sound.Position;
         var dist = 0.0f;
@@ -91,42 +88,51 @@ public class Caption
         // Ignore sounds that are out of earshot.
         var audibility = (1 - (dist / sound.Range)) * sound.Volume;
         if (audibility < AudibilityThreshold) return;
-
-
-        var channel = _channelGuide.GetChannel(id);
-        channel.Name ??= name;
+        
+        // Ignore configured tags.
+        var captionData = GetData(id);
+        foreach (var ignoredTag in CaptionsSystem.Config.IgnoredTags)
+        {
+            if (captionData.Tags?.Contains(ignoredTag) ?? false)
+                return;
+        }
+        
         AddCaption(new Caption
         {
-            LastHeard = _api.ElapsedMilliseconds,
             Name = name,
-            Channel = channel,
+            Channel = captionData.Channel ?? name,
+            Priority = captionData.Priority,
+            Tags = captionData.Tags,
+            LastHeard = _api.ElapsedMilliseconds,
             Position = sound.Position,
             Audibility = audibility,
-            AlertLevel = alertLevel
         });
     }
 
     private static void AddCaption(Caption newCaption)
     {
         // Refresh existing slot if it's already present.
-        foreach (var oldCaption in Captions)
+        for (var i = 0; i < Captions.Count; i++) //var oldCaption in Captions)
         {
+            var oldCaption = Captions[i];
+            
             // Only update this caption if it has the same name or if it's on the same channel.
-            if (oldCaption.Name != newCaption.Name && oldCaption.Channel.Name != newCaption.Channel.Name) continue;
+            if (oldCaption.Name != newCaption.Name && oldCaption.Channel != newCaption.Channel)
+                continue;
+            
             oldCaption.LastHeard = newCaption.LastHeard;
 
-            if (newCaption.Channel.Priority < oldCaption.Channel.Priority ||
-                (newCaption.Channel.Priority == oldCaption.Channel.Priority && newCaption.Audibility > oldCaption.Audibility))
+            // If this caption has a higher priority, or the same priority but is louder, replace it.
+            if (newCaption.Priority > oldCaption.Priority ||
+                (newCaption.Priority == oldCaption.Priority && newCaption.Audibility > oldCaption.Audibility))
             {
-                oldCaption.Name = newCaption.Name;
-                oldCaption.Channel = newCaption.Channel;
-                oldCaption.Position = newCaption.Position;
-                oldCaption.Audibility = newCaption.Audibility;
-                oldCaption.AlertLevel = newCaption.AlertLevel;
+                Captions[i] = newCaption;
             }
             
             return;
         }
+        
+        _api.Logger.Debug("[CAPTION] New caption: " + newCaption.Name + " in channel " + newCaption.Channel + " with tags " + string.Join(", ", newCaption.Tags));
         
         // No existing caption, add a new one.
         Captions.Add(newCaption);
@@ -135,16 +141,11 @@ public class Caption
     public long LastHeard;
     public double Age => (_api.ElapsedMilliseconds-LastHeard) / 1000.0;
     public string Name;
-    public Channel Channel;
+    public string Channel = null;
+    public int Priority = 1;
+    public List<string> Tags = [];
     public Vec3f Position;
     public float Audibility;
-    public AlertLevel AlertLevel = AlertLevel.Normal;
-}
-
-public enum AlertLevel
-{
-    Environmental,
-    Normal,
-    Notice,
-    Warning
+    
+    public bool HasTag(string tag) => Tags?.Contains(tag) ?? false;
 }

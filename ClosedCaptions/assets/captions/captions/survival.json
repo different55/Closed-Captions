@@ -1,0 +1,642 @@
+{
+  "environment/creek": {
+    "tags": ["ambient"]
+  },
+  "environment/drip": {
+    "tags": ["ambient"]
+  },
+  "environment/fire": {
+    "tags": ["ambient"]
+  },
+  "environment/fireplace": {
+    "tags": ["ambient"]
+  },
+  "environment/lava": {
+    "tags": ["ambient"]
+  },
+  "environment/smallsplash": {
+    "channel": "splash",
+    "priority": 1
+  },
+  "environment/mediumsplash": {
+    "channel": "splash",
+    "priority": 1
+  },
+  "environment/largesplash": {
+    "channel": "splash",
+    "priority": 1
+  },
+
+  "environment/rainwindow": {
+    "channel": "rain",
+    "priority": 1,
+    "tags": ["ambient"]
+  },
+  "weather/tracks/rain-leafless": {
+    "channel": "rain",
+    "priority": 1,
+    "tags": ["ambient"]
+  },
+  "weather/tracks/rain-leafy": {
+    "channel": "rain",
+    "priority": 1,
+    "tags": ["ambient"]
+  },
+
+  "environment/underwater": {
+    "tags": ["ambient"]
+  },
+  "environment/waterfall": {
+    "tags": ["ambient"]
+  },
+  "environment/waterwaves": {
+    "tags": ["ambient"]
+  },
+
+  "player/build": {
+    "tags": ["player"]
+  },
+  "player/buildhigh": {
+    "tags": ["player"]
+  },
+  "player/clayform": {
+    "tags": ["player"]
+  },
+  "player/clayformhi": {
+    "tags": ["player"]
+  },
+  "player/collect": {
+    "tags": ["player"]
+  },
+  "player/death": {},
+  "player/destruct": {
+    "tags": ["player"]
+  },
+  "player/eat": {
+    "tags": ["player"]
+  },
+  "player/eat_crunchy": {
+    "tags": ["player"]
+  },
+  "player/hurt": {
+    "tags": ["player"]
+  },
+  "player/jump": {
+    "tags": ["player"]
+  },
+  "player/knap": {
+    "tags": ["player"]
+  },
+  "player/projectilehit": {
+    "tags": ["player"]
+  },
+  "player/quickthrow": {
+    "tags": ["player"]
+  },
+  "player/slap": {
+    "tags": ["player"]
+  },
+  "player/swim": {
+    "tags": ["player"]
+  },
+  "player/throw": {
+    "tags": ["player"]
+  },
+
+  "voice/accordion": {},
+  "voice/altoflute": {},
+  "voice/clarinet": {},
+  "voice/harmonica": {},
+  "voice/oboe": {},
+  "voice/sax": {},
+  "voice/trumpet": {},
+  "voice/tuba": {},
+  "voice/saxophone": {},
+
+  "arrow-impact": {},
+  "bow-draw": {
+    "tags": ["player"]
+  },
+  "bow-release": {
+    "tags": ["player"]
+  },
+  "moltenmetal": {},
+  "pourmetal": {},
+  "raft-idle": {
+    "tags": ["ambient"]
+  },
+  "raft-moving": {},
+  "sizzle": {},
+  "thud": {},
+  "torch-ignite": {},
+  "tutorialstepsuccess": {
+    "tags": ["notice"]
+  },
+  "block/creak/woodcreak_": {},
+  "block/creak/woodcreak_long": {},
+  "block/anvil": {},
+  "block/barrelclose": {},
+  "block/barrelopen": {},
+  "block/basketclose": {},
+  "block/basketopen": {},
+  "block/ceramicbreak": {},
+  "block/ceramichit": {},
+  "block/ceramicplace": {},
+  "block/chandelier-break": {},
+  "block/chandelier-hit": {},
+  "block/charcoal": {},
+  "block/chestclose": {},
+  "block/chestopen": {},
+  "block/chop": {},
+  "block/chute": {},
+  "block/cloth": {},
+  "block/cokeovendoor-close": {},
+  "block/cokeovendoor-open": {},
+  "block/dirt": {},
+  "block/door": {},
+  "block/glass": {},
+  "block/gravel": {},
+  "block/heavyice": {},
+  "block/heavymetal": {},
+  "block/hewnfencegate": {},
+  "block/hopperopen": {},
+  "block/hoppertumble": {},
+  "block/ice": {},
+  "block/ingot": {},
+  "block/largechestclose": {},
+  "block/largechestopen": {},
+  "block/largedoor-close": {},
+  "block/largedoor-open": {},
+  "block/lava": {},
+  "block/leafy-picking": {},
+  "block/leather": {},
+  "block/loosestick": {},
+  "block/loosestone": {},
+  "block/metaldoor-place": {},
+  "block/metaldoor": {},
+  "block/meteoriciron-hit-pickaxe": {},
+  "block/planks": {
+    "tags": ["player"]
+  },
+  "block/plant": {
+    "tags": ["player"]
+  },
+  "block/plate": {},
+  "block/pump": {},
+  "block/pumpkin": {},
+  "block/quern": {},
+  "block/rock-break-pickaxe": {},
+  "block/rock-hit-pickaxe": {},
+  "block/sand": {},
+  "block/snow": {},
+  "block/stickbreak": {},
+  "block/stickhit": {},
+  "block/stickplace": {},
+  "block/teleporter": {},
+  "block/torch": {},
+  "block/vesselclose": {},
+  "block/vesselopen": {},
+  "block/vinyl": {},
+  "block/water": {},
+  "block/wood-tool": {},
+  "block/woodcreak_": {},
+
+  "creature/bear/aggro": {
+    "tags": ["warning"]
+  },
+  "creature/bear/attack": {},
+  "creature/bear/flee": {},
+  "creature/bear/growl": {
+    "tags": ["warning"]
+  },
+  "creature/bear/hurt": {},
+
+  "creature/animal-eat-small": {},
+  "creature/animal-eat": {},
+
+  "creature/beehive": {},
+  "creature/beehive-wild": {
+    "tags": ["notice"]
+  },
+  "creature/beemob": {},
+  "creature/beesting": {},
+  "creature/cicada-short-loop": {},
+  "creature/cicada": {},
+  "creature/coqui": {},
+  "creature/grasshopper": {},
+
+  "creature/hare-hurt": {},
+  "creature/hare-idle": {},
+
+  "creature/strawdummy-hit": {},
+
+  "creature/drifter-aggro": {
+    "tags": ["warning"]
+  },
+  "creature/drifter-death": {},
+  "creature/drifter-hurt": {},
+  "creature/drifter-hit": {},
+  "creature/drifter-idle": {
+    "tags": ["warning"]
+  },
+
+  "creature/bell/alarm": {
+    "tags": ["warning"]
+  },
+  "creature/bell/bell": {
+    "tags": ["warning"]
+  },
+  "creature/bell/death": {},
+  "creature/bell/hurt": {},
+  "creature/bell/listen": {
+    "tags": ["warning"]
+  },
+  "creature/bell/walk": {
+    "tags": ["warning"]
+  },
+
+  "creature/bowtorn/death": {},
+  "creature/bowtorn/draw": {},
+  "creature/bowtorn/hurt": {},
+  "creature/bowtorn/idle": {
+    "tags": ["warning"]
+  },
+  "creature/bowtorn/release": {
+    "tags": ["warning"]
+  },
+  "creature/bowtorn/reload": {},
+
+  "creature/eidolon/awake": {},
+  "creature/eidolon/awaken": {
+    "tags": ["warning"]
+  },
+  "creature/eidolon/death": {},
+  "creature/eidolon/hit": {},
+  "creature/eidolon/rockfallslam": {},
+  "creature/eidolon/throw": {},
+
+  "creature/erel/alive": {},
+  "creature/erel/annoyed": {
+    "tags": ["warning"]
+  },
+  "creature/erel/call": {},
+  "creature/erel/fire": {},
+  "creature/erel/flap": {},
+  "creature/erel/glide": {},
+  "creature/erel/hurt": {},
+
+  "creature/locust/death": {},
+  "creature/locust/hurt": {},
+  "creature/locust/idle": {
+    "tags": ["ambient"]
+  },
+  "creature/locust/saw": {},
+
+  "creature/shiver/aggro": {
+    "tags": ["warning"]
+  },
+  "creature/shiver/death": {},
+  "creature/shiver/hurt": {},
+  "creature/shiver/idle": {
+    "tags": ["warning"]
+  },
+  "creature/shiver/shock": {
+    "tags": ["notice"]
+  },
+  "creature/shiver/thump": {
+    "tags": ["warning"]
+  },
+
+  "creature/chicken/chick": {},
+  "creature/chicken/hen-flee": {},
+  "creature/chicken/hen-idle": {},
+  "creature/chicken/hen-lay": {},
+  "creature/chicken/hurt": {},
+  "creature/chicken/rooster-alarm": {},
+  "creature/chicken/rooster-call": {},
+
+  "creature/fox/attack": {},
+  "creature/fox/die": {},
+  "creature/fox/growl": {
+    "tags": ["warning"]
+  },
+  "creature/fox/hurt": {},
+  "creature/fox/yip": {},
+
+  "creature/goat/large/adult-attack": {},
+  "creature/goat/large/adult-death": {},
+  "creature/goat/large/adult-hurt": {},
+  "creature/goat/large/adult-idle": {},
+
+  "creature/goat/bleat": {},
+  "creature/goat/bleatweird": {},
+  "creature/goat/death": {},
+  "creature/goat/goatkidbleat": {},
+  "creature/goat/goatkidhurt": {},
+  "creature/goat/hurt": {},
+
+  "creature/hooved/gallop": {},
+  "creature/hooved/trot": {},
+
+  "creature/hooved/generic/call": {},
+  "creature/hooved/generic/sniff": {},
+
+  "creature/hooved/large/elk/bellow": {},
+  "creature/hooved/large/elk/bellowafter": {},
+  "creature/hooved/large/elk/bugle": {},
+
+  "creature/hooved/large/redstag/bellow": {},
+  "creature/hooved/large/redstag/roar": {},
+
+  "creature/hooved/medium/buck-bellow": {},
+  "creature/hooved/medium/deer-call": {},
+
+  "creature/hooved/small/fawn/fawn": {},
+
+  "creature/hooved/small/strange/mew": {},
+
+  "creature/hooved/small/callsmall": {},
+  "creature/hooved/small/smallscream": {},
+
+  "creature/hyena/attack": {},
+  "creature/hyena/death": {},
+  "creature/hyena/growl": {
+    "tags": ["warning"]
+  },
+  "creature/hyena/hurt": {},
+  "creature/hyena/laugh": {
+    "tags": ["warning"]
+  },
+
+  "creature/pig/attack": {},
+  "creature/pig/hurt": {},
+  "creature/pig/idle": {},
+  "creature/pig/piglet-hurt": {},
+  "creature/pig/piglet-idle": {},
+
+  "creature/raccoon/aggro": {
+    "tags": ["warning"]
+  },
+  "creature/raccoon/death": {},
+  "creature/raccoon/hurt": {},
+  "creature/raccoon/idle": {},
+  "creature/raccoon/pup-death": {},
+  "creature/raccoon/pup-hurt": {},
+  "creature/raccoon/pup-idle": {},
+
+  "creature/sheep/hurt": {},
+  "creature/sheep/idle": {},
+  "creature/sheep/lamb-hurt": {},
+  "creature/sheep/milking": {},
+
+  "creature/wolf/attack": {},
+  "creature/wolf/growl": {
+    "tags": ["warning"]
+  },
+  "creature/wolf/howl": {
+    "tags": ["warning"]
+  },
+  "creature/wolf/hurt": {},
+  "creature/wolf/pup-bark": {},
+  "creature/wolf/pup-flop": {},
+  "creature/wolf/pup-howl": {},
+  "creature/wolf/pup-hurt": {},
+
+  "effect/anvilhit": {},
+  "effect/anvilmergehit": {},
+  "effect/cashregister": {},
+  "effect/clothrip": {},
+  "effect/cooking": {},
+  "effect/crusher-impact": {},
+  "effect/deepbell": {
+    "tags": ["notice"]
+  },
+  "effect/echochamber": {},
+  "effect/embers": {},
+  "effect/extinguish": {},
+  "effect/fuse": {},
+  "effect/gearbox_turn": {},
+  "effect/gears": {},
+  "effect/gliding": {},
+  "effect/largeexplosion": {
+    "tags": ["warning"]
+  },
+  "effect/latch": {},
+  "effect/longfuse": {},
+  "effect/mediumexplosion": {
+    "tags": ["warning"]
+  },
+  "effect/moltenmetal": {},
+  "effect/planetary_gears": {},
+  "effect/portal": {},
+  "effect/receptionbell": {},
+  "effect/rift": {},
+  "effect/rockslide": {},
+  "effect/roperip": {
+    "tags": ["warning"]
+  },
+  "effect/ropestretch": {},
+  "effect/smallexplosion": {
+    "tags": ["warning"]
+  },
+  "effect/squish": {},
+  "effect/stonecrush": {},
+  "effect/swoosh": {},
+  "effect/tempstab-drain": {},
+  "effect/tempstab-low": {},
+  "effect/tempstab-verylow": {
+    "tags": ["warning"]
+  },
+  "effect/timeswitch": {},
+  "effect/toolbreak": {},
+  "effect/translocate-active": {},
+  "effect/translocate-breakdimension": {},
+  "effect/translocate-idle": {},
+  "effect/treefell": {},
+  "effect/water-fill": {},
+  "effect/water-pour": {},
+  "effect/watering": {},
+  "effect/watering-loop": {},
+  "effect/woodgrind": {},
+  "effect/woodswitch": {},
+  "effect/writing": {},
+  "held/bookclose": {},
+  "held/bookturn": {},
+  "held/shieldblock-metal-heavy": {},
+  "held/shieldblock-metal-light": {},
+  "held/shieldblock-wood-heavy": {},
+  "held/shieldblock-wood-light": {},
+  "held/torch-attack": {},
+  "held/torch-equip": {},
+  "held/torch-idle": {},
+  "held/torch-unequip": {},
+
+  "instrument/elk-call": {},
+
+  "player/chalkdraw": {},
+  "player/clothrepair": {},
+  "player/coin": {},
+  "player/gluerepair": {
+    "tags": ["wip"]
+  },
+  "player/hackingspearhit": {
+    "tags": ["notice"]
+  },
+  "player/handdrill": {},
+  "player/messycraft": {},
+  "player/panning": {},
+  "player/poultice-applied": {},
+  "player/poultice": {},
+  "player/scrape": {},
+  "player/seal": {},
+  "player/squeezehoneycomb": {},
+  "player/stab": {},
+  "player/strike": {},
+  "player/wetclothsqueeze": {},
+  "tool/breakreinforced": {},
+  "tool/padlock": {},
+  "tool/reinforce": {},
+  "tool/scythe": {},
+  "tool/slash": {},
+  "tool/sling": {},
+
+  "walk/cloth": {
+    "channel": "movement",
+    "priority": 1,
+    "tags": ["player"]
+  },
+  "walk/deepsnow": {
+    "channel": "movement",
+    "priority": 1,
+    "tags": ["player"]
+  },
+  "walk/default": {
+    "channel": "movement",
+    "priority": 1,
+    "tags": ["player"]
+  },
+  "walk/glass": {
+    "channel": "movement",
+    "priority": 1,
+    "tags": ["player"]
+  },
+  "walk/grass": {
+    "channel": "movement",
+    "priority": 1,
+    "tags": ["player"]
+  },
+  "walk/gravel": {
+    "channel": "movement",
+    "priority": 1,
+    "tags": ["player"]
+  },
+  "walk/ice": {
+    "channel": "movement",
+    "priority": 1,
+    "tags": ["player"]
+  },
+  "walk/lava": {
+    "channel": "movement",
+    "priority": 1,
+    "tags": ["player"]
+  },
+  "walk/sand": {
+    "channel": "movement",
+    "priority": 1,
+    "tags": ["player"]
+  },
+  "walk/sludge": {
+    "channel": "movement",
+    "priority": 1,
+    "tags": ["player"]
+  },
+  "walk/snow": {
+    "channel": "movement",
+    "priority": 1,
+    "tags": ["player"]
+  },
+  "walk/stone": {
+    "channel": "movement",
+    "priority": 1,
+    "tags": ["player"]
+  },
+  "walk/water": {
+    "channel": "movement",
+    "priority": 1,
+    "tags": ["player"]
+  },
+  "walk/wood": {
+    "channel": "movement",
+    "priority": 1,
+    "tags": ["player"]
+  },
+  "walk/inside/leafy/bushrustle": {
+    "channel": "movement",
+    "priority": 1,
+    "tags": ["player"]
+  },
+  "wearable/brigandine": {
+    "tags": ["player"]
+  },
+  "wearable/chain": {
+    "tags": ["player"]
+  },
+  "wearable/leather": {
+    "tags": ["player"]
+  },
+  "wearable/plate": {
+    "tags": ["player"]
+  },
+  "wearable/scale": {
+    "tags": ["player"]
+  },
+
+  "weather/tracks/verylowtremble": {
+    "channel": "thunder",
+    "priority": 1,
+    "tags": ["ambient"]
+  },
+  "weather/tracks/lowtremble": {
+    "channel": "thunder",
+    "priority": 1,
+    "tags": ["ambient"]
+  },
+  "weather/lowgrumble": {
+    "channel": "thunder",
+    "priority": 1,
+    "tags": ["ambient"]
+  },
+  "weather/lightning-distant": {
+    "channel": "thunder",
+    "priority": 2
+  },
+  "weather/lightning-near": {
+    "channel": "thunder",
+    "priority": 3,
+    "tags": ["warning"]
+  },
+  "weather/lightning-verynear": {
+    "channel": "thunder",
+    "priority": 4,
+    "tags": ["warning"]
+  },
+  "weather/lightning-nodistance": {
+    "channel": "thunder",
+    "priority": 5,
+    "tags": ["warning"]
+  },
+  "weather/tracks/hail": {
+    "tags": ["warning"]
+  },
+  "weather/wind-leafless": {
+    "channel": "wind",
+    "priority": 1,
+    "tags": ["ambient"]
+  },
+  "weather/wind-leafy": {
+    "channel": "wind",
+    "priority": 1,
+    "tags": ["ambient"]
+  },
+  "environment/wind": {}
+}

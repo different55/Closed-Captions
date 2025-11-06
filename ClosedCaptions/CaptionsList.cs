@@ -92,7 +92,12 @@ public class CaptionsList : GuiElement
             var soundName = GetDisplayName(caption);
             
             // Modify colors for special sound types.
-            if (caption.AlertLevel == AlertLevel.Warning)
+            if (caption.HasTag("notice"))
+            {
+                fg = _notice;
+                stroke = _notice;
+            }
+            else if (caption.HasTag("warning"))
             {
                 fg = _warning;
                 stroke = _warning;
@@ -102,11 +107,6 @@ public class CaptionsList : GuiElement
                     stroke = bg;
                     bg = _warning;
                 }
-            }
-            else if (caption.AlertLevel == AlertLevel.Notice)
-            {
-                fg = _notice;
-                stroke = _notice;
             }
             
             // Set alpha values.
@@ -144,54 +144,50 @@ public class CaptionsList : GuiElement
             // ±4 is directly left/right of the player, respectively
             // ±8 is directly behind the player
             var direction = GameMath.Mod((yaw + api.World.Player.CameraYaw) / GameMath.TWOPI * 16 + 4, 16) - 8;
-            
-            // BEHIND YOU
-            if (Math.Abs(direction) > 6)
+
+            switch (direction)
             {
-                ctx.NewPath();
-                ctx.Arc(1+Cfg.Width*.1, y+midHeight, Cfg.Height/8.0, 0, GameMath.TWOPI);
-                ctx.Fill();
-                ctx.NewPath();
-                ctx.Arc(1+Cfg.Width*.9, y+midHeight, Cfg.Height/8.0, 0, GameMath.TWOPI);
-                ctx.Fill();
-            }
-            // >>
-            else if (direction > 3)
-            {
-                RenderTriangle(ctx, 1+Math.Round(Cfg.Width*.9+arrowWidth), y+midHeight, arrowWidth, arrowHeight);
-                RenderTriangle(ctx, 1+Math.Round(Cfg.Width*.9+arrowWidth*.2), y+midHeight, arrowWidth, arrowHeight);
-            }
-            // >
-            else if (direction > 1)
-            {
-                RenderTriangle(ctx, 1+Math.Round(Cfg.Width*.9+arrowWidth*.2), y+midHeight, arrowWidth, arrowHeight);
-            }
-            // <<
-            else if (direction < -3)
-            {
-                RenderTriangle(ctx, 1+Math.Round(Cfg.Width*.1-arrowWidth), y+midHeight, -arrowWidth, arrowHeight);
-                RenderTriangle(ctx, 1+Math.Round(Cfg.Width*.1-arrowWidth*.2), y+midHeight, -arrowWidth, arrowHeight);
-            }
-            // <
-            else if (direction < -1)
-            {
-                RenderTriangle(ctx, 1+Math.Round(Cfg.Width*.1-arrowWidth*.55), y+midHeight, -arrowWidth, arrowHeight);
+                // BEHIND YOU
+                case > 6:
+                case < -6:
+                    ctx.NewPath();
+                    ctx.Arc(1+Cfg.Width*.1, y+midHeight, Cfg.Height/8.0, 0, GameMath.TWOPI);
+                    ctx.Fill();
+                    ctx.NewPath();
+                    ctx.Arc(1+Cfg.Width*.9, y+midHeight, Cfg.Height/8.0, 0, GameMath.TWOPI);
+                    ctx.Fill();
+                    break;
+                // >>
+                case > 3:
+                    RenderTriangle(ctx, 1+Math.Round(Cfg.Width*.9+arrowWidth), y+midHeight, arrowWidth, arrowHeight);
+                    RenderTriangle(ctx, 1+Math.Round(Cfg.Width*.9+arrowWidth*.2), y+midHeight, arrowWidth, arrowHeight);
+                    break;
+                // >
+                case > 1:
+                    RenderTriangle(ctx, 1+Math.Round(Cfg.Width*.9+arrowWidth*.2), y+midHeight, arrowWidth, arrowHeight);
+                    break;
+                // <<
+                case < -3:
+                    RenderTriangle(ctx, 1+Math.Round(Cfg.Width*.1-arrowWidth), y+midHeight, -arrowWidth, arrowHeight);
+                    RenderTriangle(ctx, 1+Math.Round(Cfg.Width*.1-arrowWidth*.2), y+midHeight, -arrowWidth, arrowHeight);
+                    break;
+                // <
+                case < -1:
+                    RenderTriangle(ctx, 1+Math.Round(Cfg.Width*.1-arrowWidth*.55), y+midHeight, -arrowWidth, arrowHeight);
+                    break;
             }
         }
     }
 
-    private string GetDisplayName(Caption caption)
+    private static string GetDisplayName(Caption caption)
     {
         if (!Cfg.ShowSymbols) return caption.Name;
-        return caption.AlertLevel switch
-        {
-            AlertLevel.Warning => "! " + caption.Name + " !",
-            AlertLevel.Notice => "+ " + caption.Name + " +",
-            _ => caption.Name
-        };
+        if (caption.HasTag("warning")) return "! " + caption.Name + " !";
+        if (caption.HasTag("notice")) return "+ " + caption.Name + " +";
+        return caption.Name;
     }
 
-    private void RenderTriangle(Context ctx, double x, double y, double w, double h)
+    private static void RenderTriangle(Context ctx, double x, double y, double w, double h)
     {
         ctx.NewPath();
         ctx.MoveTo(x, y);
