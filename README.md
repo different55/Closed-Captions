@@ -24,6 +24,8 @@ Sounds are also color coded. "Dangerous" sounds that might alert you to a danger
 
 This mod has a JSON config file to customize warning/notice color, position, size, style, and behavior. There are two options to hopefully increase accessibility, one to add symbols to sound names, and one to invert the colors on warning captions to increase visibility.
 
+You can also select categories of sound effects to exclude from displaying in captions. This is still being developed, but currently available categories are "ambient" sounds with no gameplay impact and "player" sounds for any player-generated noises.
+
 If you want a GUI to edit your caption settings, this mod has support for Auto Config Lib. After installing that, this mod will show up in your pause menu under Mod Settings.
 
 ## Completeness
@@ -48,3 +50,5 @@ If you want to add support for a sound effect to this mod, I welcome pull reques
 
 Currently, this mod has built-in support for:
  - Primitive Survival
+ - FoTSA: Pantherinae
+ - A Culinary Artillery
