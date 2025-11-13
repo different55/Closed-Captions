@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using Vintagestory.API.Client;
@@ -10,7 +10,7 @@ namespace ClosedCaptions;
 
 public class Caption
 {
-    private const double AudibilityThreshold = 0.1;
+    private const double AudibilityThreshold = 0.07;
     private static Dictionary<string, LoadedCaptionData> _metadata;
     private static ICoreClientAPI _api;
     private static Queue<ILoadedSound> _activeSounds;
@@ -86,7 +86,7 @@ public class Caption
         if (dist > sound.Range) return;
         
         // Ignore sounds that are out of earshot.
-        var audibility = (1 - (dist / sound.Range)) * sound.Volume;
+        var audibility = (float)Math.Pow((1 - (dist / sound.Range)), 0.5) * sound.Volume;
         if (audibility < AudibilityThreshold) return;
         
         // Ignore configured tags.
