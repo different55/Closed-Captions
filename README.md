@@ -52,3 +52,5 @@ Currently, this mod has built-in support for:
  - Primitive Survival
  - FoTSA: Pantherinae
  - A Culinary Artillery
+ - Cats
+ - The Critter Pack
