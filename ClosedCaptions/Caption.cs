@@ -68,7 +68,7 @@ public class Caption
         var id = sound.Location.Path;
         if (id.StartsWith("sounds/")) id = id[7..];
         if (id.EndsWith(".ogg")) id = id[..^4];
-        id = id.TrimEnd('0', '1', '2', '3', '4', '5', '6', '7', '8', '9');
+        id = id.TrimEnd('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '_');
 
         // Unnamed sounds use ID as fallback.
         var name = Lang.GetIfExists("captions:" + id) ?? id;
