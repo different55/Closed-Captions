@@ -29,7 +29,10 @@ public class CaptionsList : GuiElement
     public CaptionsList(ICoreClientAPI capi, ElementBounds bounds) : base(capi, bounds) {
         _texture = new LoadedTexture(capi);
         
-        _font = CairoFont.WhiteMediumText().WithFont(Cfg.Font).WithFontSize(Cfg.FontSize);
+        _font = CairoFont.WhiteMediumText()
+            .WithFont(Cfg.Font)
+            .WithFontSize(Cfg.FontSize)
+            .WithWeight(Cfg.FontBold ? FontWeight.Bold : FontWeight.Normal);
         _fontMetrics = _font.GetTextExtents("Waves Crash");
         
         _warning = new Color(Cfg.WarningRed, Cfg.WarningGreen, Cfg.WarningBlue);

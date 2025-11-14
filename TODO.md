@@ -1,4 +1,3 @@
-* Font Weight
 * Have brightness dim slightly immediately, so that sound effects in one channel in rapid succession are noticeable.
 * Make some sounds group by location.
 * Experiment with smooth transitions between directional states.

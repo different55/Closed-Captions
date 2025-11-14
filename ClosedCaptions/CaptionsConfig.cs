@@ -45,6 +45,9 @@ public class CaptionsConfig
     [Category("Font")]
     [Range(8, 64)]
     public float FontSize = 28;
+    [Description("Make the font bold.")]
+    [Category("Font")]
+    public bool FontBold = false;
     [Description("How transparent the caption background should be.")]
     [Category("Style")]
     [Range(0, 1)]
