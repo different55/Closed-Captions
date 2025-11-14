@@ -481,5 +481,13 @@
   "CATS": "",
   "captions:creature/cat/hiss": "Cat hisses",
   "captions:creature/cat/meow": "Cat meows",
-  "captions:creature/cat/purr": "Cat purrs"
+  "captions:creature/cat/purr": "Cat purrs",
+  
+  "FAUNA OF THE STONE AGE: ELEPHANTIDAE": "",
+  "captions:creature/elephantidae/babycall": "Elephant calf squeaks",
+  "captions:creature/elephantidae/carcass": "Flies buzz",
+  "captions:creature/elephantidae/growl": "Elephant growls",
+  "captions:creature/elephantidae/roar": "Elephant roars",
+  "captions:creature/elephantidae/squeak": "Elephant squeaks",
+  "captions:creature/elephantidae/trumpet": "Elephant trumpets"
 }
