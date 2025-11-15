@@ -430,7 +430,6 @@
   "effect/planetary_gears": {},
   "effect/portal": {},
   "effect/receptionbell": {},
-  "effect/rift": {},
   "effect/rockslide": {},
   "effect/roperip": {
     "tags": ["warning"]
@@ -442,9 +441,19 @@
   "effect/squish": {},
   "effect/stonecrush": {},
   "effect/swoosh": {},
-  "effect/tempstab-drain": {},
-  "effect/tempstab-low": {},
+  "effect/rift": {
+    "channel": "temporal"
+  },
+  "effect/tempstab-drain": {
+    "channel": "temporal"
+  },
+  "effect/tempstab-low": {
+    "channel": "temporal",
+    "priority": 2
+  },
   "effect/tempstab-verylow": {
+    "channel": "temporal",
+    "priority": 3,
     "tags": ["warning"]
   },
   "effect/timeswitch": {},
