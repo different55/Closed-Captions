@@ -30,17 +30,17 @@
   "environment/rainwindow": {
     "channel": "rain",
     "priority": 1,
-    "tags": ["ambient"]
+    "tags": ["ambient", "weather"]
   },
   "weather/tracks/rain-leafless": {
     "channel": "rain",
     "priority": 1,
-    "tags": ["ambient"]
+    "tags": ["ambient", "weather"]
   },
   "weather/tracks/rain-leafy": {
     "channel": "rain",
     "priority": 1,
-    "tags": ["ambient"]
+    "tags": ["ambient", "weather"]
   },
 
   "environment/underwater": {
@@ -111,7 +111,9 @@
   "voice/sax": {},
   "voice/trumpet": {},
   "voice/tuba": {},
-  "voice/saxophone": {},
+  "voice/saxophone": {
+    "tags": ["npc"]
+  },
 
   "arrow-impact": {},
   "bow-draw": {
@@ -132,7 +134,7 @@
   "tutorialstepsuccess": {
     "tags": ["notice"]
   },
-  "block/creak/woodcreak_": {},
+  "block/creak/woodcreak": {},
   "block/creak/woodcreak_long": {},
   "block/anvil": {},
   "block/barrelclose": {},
@@ -199,208 +201,402 @@
   "block/vinyl": {},
   "block/water": {},
   "block/wood-tool": {},
-  "block/woodcreak_": {},
+  "block/woodcreak": {},
 
   "creature/bear/aggro": {
-    "tags": ["warning"]
+    "tags": ["warning", "creature", "hostile"]
   },
-  "creature/bear/attack": {},
-  "creature/bear/flee": {},
+  "creature/bear/attack": {
+    "tags": ["creature", "hostile"]
+  },
+  "creature/bear/flee": {
+    "tags": ["creature", "hostile"]
+  },
   "creature/bear/growl": {
-    "tags": ["warning"]
+    "tags": ["warning", "creature", "hostile"]
   },
-  "creature/bear/hurt": {},
+  "creature/bear/hurt": {
+    "tags": ["creature", "hostile", "hurt"]
+  },
 
-  "creature/animal-eat-small": {},
-  "creature/animal-eat": {},
+  "creature/animal-eat-small": {
+    "tags": ["creature", "passive"]
+  },
+  "creature/animal-eat": {
+    "tags": ["creature", "passive"]
+  },
 
   "creature/beehive": {},
   "creature/beehive-wild": {
     "tags": ["notice"]
   },
-  "creature/beemob": {},
-  "creature/beesting": {},
-  "creature/cicada-short-loop": {},
-  "creature/cicada": {},
-  "creature/coqui": {},
-  "creature/grasshopper": {},
+  "creature/beemob": {
+    "tags": ["warning", "creature", "hostile"]
+  },
+  "creature/beesting": {
+    "tags": ["creature", "hostile"]
+  },
+  "creature/cicada-short-loop": {
+    "tags": ["creature", "ambient"]
+  },
+  "creature/cicada": {
+    "tags": ["creature", "ambient"]
+  },
+  "creature/coqui": {
+    "tags": ["creature", "ambient"]
+  },
+  "creature/grasshopper": {
+    "tags": ["creature", "ambient"]
+  },
 
-  "creature/hare-hurt": {},
-  "creature/hare-idle": {},
+  "creature/hare-hurt": {
+    "tags": ["creature", "passive", "hurt"]
+  },
+  "creature/hare-idle": {
+    "tags": ["creature", "passive", "idle"]
+  },
 
   "creature/strawdummy-hit": {},
 
   "creature/drifter-aggro": {
-    "tags": ["warning"]
+    "tags": ["warning", "rust", "creature", "hostile"]
   },
-  "creature/drifter-death": {},
-  "creature/drifter-hurt": {},
-  "creature/drifter-hit": {},
+  "creature/drifter-death": {
+    "tags": ["creature", "rust", "hostile"]
+  },
+  "creature/drifter-hurt": {
+    "tags": ["creature", "rust", "hostile", "hurt"]
+  },
+  "creature/drifter-hit": {
+    "tags": ["creature", "rust", "hostile"]
+  },
   "creature/drifter-idle": {
-    "tags": ["warning"]
+    "tags": ["warning", "creature", "rust", "hostile", "idle"]
   },
 
   "creature/bell/alarm": {
-    "tags": ["warning"]
+    "tags": ["warning", "creature", "rust", "hostile"]
   },
   "creature/bell/bell": {
-    "tags": ["warning"]
+    "tags": ["warning", "creature", "rust", "hostile"]
   },
-  "creature/bell/death": {},
-  "creature/bell/hurt": {},
+  "creature/bell/death": {
+    "tags": ["creature", "rust", "hostile"]
+  },
+  "creature/bell/hurt": {
+    "tags": ["creature", "rust", "hostile", "hurt"]
+  },
   "creature/bell/listen": {
-    "tags": ["warning"]
+    "tags": ["warning", "creature", "rust", "hostile", "idle"]
   },
   "creature/bell/walk": {
-    "tags": ["warning"]
+    "tags": ["warning", "creature", "rust", "hostile", "idle"]
   },
 
-  "creature/bowtorn/death": {},
-  "creature/bowtorn/draw": {},
-  "creature/bowtorn/hurt": {},
+  "creature/bowtorn/death": {
+    "tags": ["creature", "hostile", "rust"]
+  },
+  "creature/bowtorn/draw": {
+    "tags": ["creature", "hostile", "rust"]
+  },
+  "creature/bowtorn/hurt": {
+    "tags": ["creature", "hostile", "rust", "hurt"]
+  },
   "creature/bowtorn/idle": {
-    "tags": ["warning"]
+    "tags": ["warning", "creature", "hostile", "rust", "idle"]
   },
   "creature/bowtorn/release": {
-    "tags": ["warning"]
+    "tags": ["warning", "creature", "hostile", "rust"]
   },
-  "creature/bowtorn/reload": {},
+  "creature/bowtorn/reload": {
+    "tags": ["warning", "creature", "hostile", "rust"]
+  },
 
-  "creature/eidolon/awake": {},
+  "creature/eidolon/awake": {
+    "tags": ["creature", "hostile", "rust", "idle"]
+  },
   "creature/eidolon/awaken": {
-    "tags": ["warning"]
+    "tags": ["warning", "creature", "hostile", "rust"]
   },
-  "creature/eidolon/death": {},
-  "creature/eidolon/hit": {},
-  "creature/eidolon/rockfallslam": {},
-  "creature/eidolon/throw": {},
+  "creature/eidolon/death": {
+    "tags": ["creature", "hostile", "rust"]
+  },
+  "creature/eidolon/hit": {
+    "tags": ["creature", "hostile", "rust", "hurt"]
+  },
+  "creature/eidolon/rockfallslam": {
+    "tags": ["warning", "creature", "hostile", "rust"]
+  },
+  "creature/eidolon/throw": {
+    "tags": ["warning", "creature", "hostile", "rust"]
+  },
 
-  "creature/erel/alive": {},
+  "creature/erel/alive": {
+    "tags": ["creature", "hostile", "rust", "idle"]
+  },
   "creature/erel/annoyed": {
-    "tags": ["warning"]
+    "tags": ["warning", "creature", "hostile", "rust"]
   },
-  "creature/erel/call": {},
-  "creature/erel/fire": {},
-  "creature/erel/flap": {},
-  "creature/erel/glide": {},
-  "creature/erel/hurt": {},
+  "creature/erel/call": {
+    "tags": ["creature", "hostile", "rust"]
+  },
+  "creature/erel/fire": {
+    "tags": ["creature", "hostile", "rust"]
+  },
+  "creature/erel/flap": {
+    "tags": ["creature", "hostile", "rust"]
+  },
+  "creature/erel/glide": {
+    "tags": ["creature", "hostile", "rust"]
+  },
+  "creature/erel/hurt": {
+    "tags": ["creature", "hostile", "rust", "hurt"]
+  },
 
-  "creature/locust/death": {},
-  "creature/locust/hurt": {},
-  "creature/locust/idle": {
-    "tags": ["ambient"]
+  "creature/locust/death": {
+    "tags": ["creature", "hostile", "rust"]
   },
-  "creature/locust/saw": {},
+  "creature/locust/hurt": {
+    "tags": ["creature", "hostile", "rust", "hurt"]
+  },
+  "creature/locust/idle": {
+    "tags": ["creature", "hostile", "rust", "idle"]
+  },
+  "creature/locust/saw": {
+    "tags": ["creature", "hostile", "rust"]
+  },
 
   "creature/shiver/aggro": {
-    "tags": ["warning"]
+    "tags": ["warning", "creature", "hostile", "rust"]
   },
-  "creature/shiver/death": {},
-  "creature/shiver/hurt": {},
+  "creature/shiver/death": {
+    "tags": ["creature", "hostile", "rust"]
+  },
+  "creature/shiver/hurt": {
+    "tags": ["creature", "hostile", "rust", "hurt"]
+  },
   "creature/shiver/idle": {
-    "tags": ["warning"]
+    "tags": ["warning", "creature", "hostile", "rust", "idle"]
   },
   "creature/shiver/shock": {
-    "tags": ["notice"]
+    "tags": ["notice", "creature", "hostile", "rust"]
   },
   "creature/shiver/thump": {
-    "tags": ["warning"]
+    "tags": ["warning", "creature", "hostile", "rust"]
   },
 
-  "creature/chicken/chick": {},
-  "creature/chicken/hen-flee": {},
-  "creature/chicken/hen-idle": {},
-  "creature/chicken/hen-lay": {},
-  "creature/chicken/hurt": {},
-  "creature/chicken/rooster-alarm": {},
-  "creature/chicken/rooster-call": {},
+  "creature/chicken/chick": {
+    "tags": ["creature", "passive"]
+  },
+  "creature/chicken/hen-flee": {
+    "tags": ["creature", "passive"]
+  },
+  "creature/chicken/hen-idle": {
+    "tags": ["creature", "passive", "idle"]
+  },
+  "creature/chicken/hen-lay": {
+    "tags": ["creature", "passive"]
+  },
+  "creature/chicken/hurt": {
+    "tags": ["creature", "passive", "hurt"]
+  },
+  "creature/chicken/rooster-alarm": {
+    "tags": ["creature", "neutral"]
+  },
+  "creature/chicken/rooster-call": {
+    "tags": ["creature", "neutral"]
+  },
 
-  "creature/fox/attack": {},
-  "creature/fox/die": {},
+  "creature/fox/attack": {
+    "tags": ["creature", "neutral"]
+  },
+  "creature/fox/die": {
+    "tags": ["creature", "neutral"]
+  },
   "creature/fox/growl": {
-    "tags": ["warning"]
+    "tags": ["warning", "creature", "neutral"]
   },
-  "creature/fox/hurt": {},
-  "creature/fox/yip": {},
+  "creature/fox/hurt": {
+    "tags": ["creature", "neutral", "hurt"]
+  },
+  "creature/fox/yip": {
+    "tags": ["creature", "neutral"]
+  },
 
-  "creature/goat/large/adult-attack": {},
-  "creature/goat/large/adult-death": {},
-  "creature/goat/large/adult-hurt": {},
-  "creature/goat/large/adult-idle": {},
+  "creature/goat/large/adult-attack": {
+    "tags": ["creature", "hostile"]
+  },
+  "creature/goat/large/adult-death": {
+    "tags": ["creature", "hostile"]
+  },
+  "creature/goat/large/adult-hurt": {
+    "tags": ["creature", "hostile", "hurt"]
+  },
+  "creature/goat/large/adult-idle": {
+    "tags": ["creature", "hostile", "idle"]
+  },
 
-  "creature/goat/bleat": {},
-  "creature/goat/bleatweird": {},
-  "creature/goat/death": {},
-  "creature/goat/goatkidbleat": {},
-  "creature/goat/goatkidhurt": {},
-  "creature/goat/hurt": {},
+  "creature/goat/bleat": {
+    "tags": ["creature", "hostile"]
+  },
+  "creature/goat/bleatweird": {
+    "tags": ["creature", "hostile"]
+  },
+  "creature/goat/death": {
+    "tags": ["creature", "hostile"]
+  },
+  "creature/goat/goatkidbleat": {
+    "tags": ["creature", "neutral"]
+  },
+  "creature/goat/goatkidhurt": {
+    "tags": ["creature", "neutral", "hurt"]
+  },
+  "creature/goat/hurt": {
+    "tags": ["creature", "hostile", "hurt"]
+  },
 
-  "creature/hooved/gallop": {},
-  "creature/hooved/trot": {},
+  "creature/hooved/gallop": {
+    "tags": ["creature", "passive"]
+  },
+  "creature/hooved/trot": {
+    "tags": ["creature", "passive"]
+  },
 
-  "creature/hooved/generic/call": {},
-  "creature/hooved/generic/sniff": {},
+  "creature/hooved/generic/call": {
+    "tags": ["creature", "passive"]
+  },
+  "creature/hooved/generic/sniff": {
+    "tags": ["creature", "passive"]
+  },
 
-  "creature/hooved/large/elk/bellow": {},
-  "creature/hooved/large/elk/bellowafter": {},
-  "creature/hooved/large/elk/bugle": {},
+  "creature/hooved/large/elk/bellow": {
+    "tags": ["creature", "hostile"]
+  },
+  "creature/hooved/large/elk/bellowafter": {
+    "tags": ["creature", "hostile"]
+  },
+  "creature/hooved/large/elk/bugle": {
+    "tags": ["creature", "hostile"]
+  },
 
-  "creature/hooved/large/redstag/bellow": {},
-  "creature/hooved/large/redstag/roar": {},
+  "creature/hooved/large/redstag/bellow": {
+    "tags": ["creature", "passive"]
+  },
+  "creature/hooved/large/redstag/roar": {
+    "tags": ["creature", "passive"]
+  },
 
-  "creature/hooved/medium/buck-bellow": {},
-  "creature/hooved/medium/deer-call": {},
+  "creature/hooved/medium/buck-bellow": {
+    "tags": ["creature", "passive"]
+  },
+  "creature/hooved/medium/deer-call": {
+    "tags": ["creature", "passive"]
+  },
 
-  "creature/hooved/small/fawn/fawn": {},
+  "creature/hooved/small/fawn/fawn": {
+    "tags": ["creature", "passive"]
+  },
 
-  "creature/hooved/small/strange/mew": {},
+  "creature/hooved/small/strange/mew": {
+    "tags": ["creature", "passive"]
+  },
 
-  "creature/hooved/small/callsmall": {},
-  "creature/hooved/small/smallscream": {},
+  "creature/hooved/small/callsmall": {
+    "tags": ["creature", "passive"]
+  },
+  "creature/hooved/small/smallscream": {
+    "tags": ["creature", "passive"]
+  },
 
-  "creature/hyena/attack": {},
-  "creature/hyena/death": {},
+  "creature/hyena/attack": {
+    "tags": ["creature", "hostile"]
+  },
+  "creature/hyena/death": {
+    "tags": ["creature", "hostile"]
+  },
   "creature/hyena/growl": {
-    "tags": ["warning"]
+    "tags": ["warning", "creature", "hostile"]
   },
-  "creature/hyena/hurt": {},
+  "creature/hyena/hurt": {
+    "tags": ["creature", "hostile", "hurt"]
+  },
   "creature/hyena/laugh": {
-    "tags": ["warning"]
+    "tags": ["warning", "creature", "hostile"]
   },
 
-  "creature/pig/attack": {},
-  "creature/pig/hurt": {},
-  "creature/pig/idle": {},
-  "creature/pig/piglet-hurt": {},
-  "creature/pig/piglet-idle": {},
+  "creature/pig/attack": {
+    "tags": ["creature", "neutral"]
+  },
+  "creature/pig/hurt": {
+    "tags": ["creature", "neutral", "hurt"]
+  },
+  "creature/pig/idle": {
+    "tags": ["creature", "neutral", "idle"]
+  },
+  "creature/pig/piglet-hurt": {
+    "tags": ["creature", "passive", "hurt"]
+  },
+  "creature/pig/piglet-idle": {
+    "tags": ["creature", "passive", "idle"]
+  },
 
   "creature/raccoon/aggro": {
-    "tags": ["warning"]
+    "tags": ["warning", "creature", "neutral"]
   },
-  "creature/raccoon/death": {},
-  "creature/raccoon/hurt": {},
-  "creature/raccoon/idle": {},
-  "creature/raccoon/pup-death": {},
-  "creature/raccoon/pup-hurt": {},
-  "creature/raccoon/pup-idle": {},
+  "creature/raccoon/death": {
+    "tags": ["creature", "neutral"]
+  },
+  "creature/raccoon/hurt": {
+    "tags": ["creature", "neutral", "hurt"]
+  },
+  "creature/raccoon/idle": {
+    "tags": ["creature", "neutral", "idle"]
+  },
+  "creature/raccoon/pup-death": {
+    "tags": ["creature", "passive"]
+  },
+  "creature/raccoon/pup-hurt": {
+    "tags": ["creature", "passive", "hurt"]
+  },
+  "creature/raccoon/pup-idle": {
+    "tags": ["creature", "passive", "idle"]
+  },
 
-  "creature/sheep/hurt": {},
-  "creature/sheep/idle": {},
-  "creature/sheep/lamb-hurt": {},
+  "creature/sheep/hurt": {
+    "tags": ["creature", "passive", "hurt"]
+  },
+  "creature/sheep/idle": {
+    "tags": ["creature", "passive", "idle"]
+  },
+  "creature/sheep/lamb-hurt": {
+    "tags": ["creature", "passive", "hurt"]
+  },
   "creature/sheep/milking": {},
 
-  "creature/wolf/attack": {},
+  "creature/wolf/attack": {
+    "tags": ["creature", "hostile"]
+  },
   "creature/wolf/growl": {
-    "tags": ["warning"]
+    "tags": ["warning", "creature", "hostile"]
   },
   "creature/wolf/howl": {
-    "tags": ["warning"]
+    "tags": ["warning", "creature", "hostile"]
   },
-  "creature/wolf/hurt": {},
-  "creature/wolf/pup-bark": {},
-  "creature/wolf/pup-flop": {},
-  "creature/wolf/pup-howl": {},
-  "creature/wolf/pup-hurt": {},
+  "creature/wolf/hurt": {
+    "tags": ["creature", "hostile", "hurt"]
+  },
+  "creature/wolf/pup-bark": {
+    "tags": ["creature", "passive"]
+  },
+  "creature/wolf/pup-flop": {
+    "tags": ["creature", "passive"]
+  },
+  "creature/wolf/pup-howl": {
+    "tags": ["creature", "passive"]
+  },
+  "creature/wolf/pup-hurt": {
+    "tags": ["creature", "passive", "hurt"]
+  },
 
   "effect/anvilhit": {},
   "effect/anvilmergehit": {},
@@ -485,9 +681,7 @@
   "player/chalkdraw": {},
   "player/clothrepair": {},
   "player/coin": {},
-  "player/gluerepair": {
-    "tags": ["wip"]
-  },
+  "player/gluerepair": {},
   "player/hackingspearhit": {
     "tags": ["notice"]
   },
@@ -603,49 +797,50 @@
   "weather/tracks/verylowtremble": {
     "channel": "thunder",
     "priority": 1,
-    "tags": ["ambient"]
+    "tags": ["ambient", "weather"]
   },
   "weather/tracks/lowtremble": {
     "channel": "thunder",
     "priority": 1,
-    "tags": ["ambient"]
+    "tags": ["ambient", "weather"]
   },
   "weather/lowgrumble": {
     "channel": "thunder",
     "priority": 1,
-    "tags": ["ambient"]
+    "tags": ["ambient", "weather"]
   },
   "weather/lightning-distant": {
     "channel": "thunder",
-    "priority": 2
+    "priority": 2,
+    "tags": ["weather"]
   },
   "weather/lightning-near": {
     "channel": "thunder",
     "priority": 3,
-    "tags": ["warning"]
+    "tags": ["warning", "weather"]
   },
   "weather/lightning-verynear": {
     "channel": "thunder",
     "priority": 4,
-    "tags": ["warning"]
+    "tags": ["warning", "weather"]
   },
   "weather/lightning-nodistance": {
     "channel": "thunder",
     "priority": 5,
-    "tags": ["warning"]
+    "tags": ["warning", "weather"]
   },
   "weather/tracks/hail": {
-    "tags": ["warning"]
+    "tags": ["warning", "weather"]
   },
   "weather/wind-leafless": {
     "channel": "wind",
     "priority": 1,
-    "tags": ["ambient"]
+    "tags": ["ambient", "weather"]
   },
   "weather/wind-leafy": {
     "channel": "wind",
     "priority": 1,
-    "tags": ["ambient"]
+    "tags": ["ambient", "weather"]
   },
   "environment/wind": {}
 }

@@ -5,3 +5,4 @@
   * GUI should warn users if current font settings may not fit inside their current captionbox settings. 
 * Rename "audibility"
 * Improve font sizing.
+* Check on the hooved animals, are they passive or hostile?
