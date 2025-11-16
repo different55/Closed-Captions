@@ -117,7 +117,7 @@ public class Caption
             var oldCaption = Captions[i];
             
             // Only update this caption if it has the same name or if it's on the same channel.
-            if (oldCaption.Name != newCaption.Name && oldCaption.Channel != newCaption.Channel)
+            if (oldCaption.Channel != newCaption.Channel)
                 continue;
             
             oldCaption.LastHeard = newCaption.LastHeard;
@@ -131,8 +131,6 @@ public class Caption
             
             return;
         }
-        
-        _api.Logger.Debug("[CAPTION] New caption: " + newCaption.Name + " in channel " + newCaption.Channel + " with tags " + string.Join(", ", newCaption.Tags));
         
         // No existing caption, add a new one.
         Captions.Add(newCaption);

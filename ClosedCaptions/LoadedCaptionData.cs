@@ -4,7 +4,7 @@ namespace ClosedCaptions;
 
 public class LoadedCaptionData
 {
-    public readonly string Channel = null;
-    public readonly int Priority = 1;
-    public readonly List<string> Tags = [];
+    public string Channel = null;
+    public int Priority = 1;
+    public List<string> Tags = [];
 }
