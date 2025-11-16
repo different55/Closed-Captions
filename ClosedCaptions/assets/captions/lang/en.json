@@ -484,5 +484,26 @@
   "captions:creature/elephantidae/growl": "Elephant growls",
   "captions:creature/elephantidae/roar": "Elephant roars",
   "captions:creature/elephantidae/squeak": "Elephant squeaks",
-  "captions:creature/elephantidae/trumpet": "Elephant trumpets"
+  "captions:creature/elephantidae/trumpet": "Elephant trumpets",
+  
+  "MORE ANIMALS": "",
+  "captions:capercaillie/caipercailliecall": "Capercaillie chatters",
+  "captions:capercaillie/caipercailliecock": "Capercaillie barks",
+  "captions:capercaillie/caipercailliehen": "Capercaillie chirps",
+  "captions:capercaillie/caipercailliehurt": "Capercaillie hit",
+  "captions:goldenpheasant/goldenpheasantcock": "Pheasant whistles",
+  "captions:goldenpheasant/goldenpheasanten": "Pheasant clucks",
+  "captions:pheasant/pheasant": "Pheasant crows",
+  "captions:pheasant/pheasantdeath": "Pheasant dies",
+  "captions:pheasant/pheasanthen": "Pheasant chirps",
+  "captions:pheasant/pheasanthenhurt": "Pheasant hit",
+  "captions:pheasant/pheasanthurt": "Pheasant hit",
+  "captions:turkey/wildturkeydie": "Turkey dies",
+  "captions:turkey/wildturkeygobbleralert": "Turkey startles",
+  "captions:turkey/wildturkeygobblercall": "Turkey gobbles",
+  "captions:turkey/wildturkeygobblerhurt": "Turkey hit",
+  "captions:turkey/wildturkeygobbleridle": "Turkey chatters",
+  "captions:turkey/wildturkeyhenalert": "Turkey flees",
+  "captions:turkey/wildturkeyhenhurt": "Turkey hit",
+  "captions:turkey/wildturkeyhenidle": "Turkey trills"
 }
