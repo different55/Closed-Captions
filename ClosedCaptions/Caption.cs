@@ -43,6 +43,14 @@ public class Caption
     // Synchronizes the internal caption list with the currently active sounds.
     public static void SyncCaptions()
     {
+        // Reset priority to keep high priority sounds from getting pinned to the caption
+        // beyond the end of their life by lower priority sounds in the same channel.
+        // TODO: Let's just stash a copy of every active sound into the caption itself.
+        foreach (var caption in Captions)
+        {
+            caption.Priority = 0;
+        }
+        
         // Update captions with fresh sound data.
         foreach (var sound in _activeSounds)
         {
