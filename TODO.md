@@ -6,3 +6,7 @@
 * Rename "audibility"
 * Improve font sizing.
 * Check on the hooved animals, are they passive or hostile?
+* Swap "rain patters" and "rain pours". Maybe change one to rain splashes?
+* Add list of sounds to each caption.
+* Add normalization for sound levels.
+* Unmark fox growling as dangerous, I think they only growl at prey.
