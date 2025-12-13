@@ -26,13 +26,41 @@ public class CaptionsSystem : ModSystem
         
         Caption.Initialize(_api);
         
-        if (!Config.Enabled) return;
-         
+        // Initial load of overlay
+        if (Config.Enabled)
+        {
+             _dialog = new CaptionsDialog(_api);
+             _dialog.TryOpen();
+        }
+
+        // Register Hotkey for Settings
+        _api.Input.RegisterHotKey("captionssettings", "Open Captions Settings", GlKeys.C, HotkeyType.GUIOrOtherControls, ctrlPressed: true, shiftPressed: false, altPressed: false);
+        _api.Input.SetHotKeyHandler("captionssettings", OnToggleSettings);
+
         _api.Event.IsPlayerReady += (ref EnumHandling _) =>
         {
-            Reload();
+            // Maybe ensure dialog is open if enabled
+            if (Config.Enabled && (_dialog == null || !_dialog.IsOpened()))
+            {
+                 Reload();
+            }
             return true;
         };
+    }
+
+    private static bool OnToggleSettings(KeyCombination comb)
+    {
+        if (_settings != null && _settings.IsOpened())
+        {
+            _settings.TryClose();
+            _settings = null; // Dispose reference
+        }
+        else
+        {
+            _settings = new SettingsDialog(_api);
+            _settings.TryOpen();
+        }
+        return true;
     }
     
     private static void LoadConfig()
@@ -54,13 +82,17 @@ public class CaptionsSystem : ModSystem
 
     public static void Reload()
     {
+        // Reloads the Captions Overlay (and Config)
+        // Does NOT auto-open SettingsDialog
+        
         _dialog?.TryClose();
-        _settings?.TryClose();
+        
         LoadConfig();
-        if (!Config.Enabled) return;
-        _dialog = new CaptionsDialog(_api);
-        _dialog.TryOpen();
-        _settings = new SettingsDialog(_api);
-        _settings.TryOpen();
+        
+        if (Config.Enabled)
+        {
+            _dialog = new CaptionsDialog(_api);
+            _dialog.TryOpen();
+        }
     }
 }
