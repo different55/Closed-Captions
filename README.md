@@ -2,7 +2,7 @@
 
 Add closed captions/subtitles to Vintage Story. Make the game playable on mute!
 
-Based heavily on goxmeor's existing subtitles mod, but now updated for v1.21, and refined visually somewhat, sorta.
+Based heavily on goxmeor's existing subtitles mod, but now updated for v1.22, and refined visually and functionally.
 
 ## Features
 
@@ -30,7 +30,7 @@ If you want a GUI to edit your caption settings, this mod has support for Auto C
 
 ## Completeness
 
-As of v1.21.4, I believe I have mapped all vanilla sounds to have audio descriptions. If I've missed any, instead of displaying a description like "Drifter groans," it'll show up as "creature/drifter-aggro." If you see any like this for **vanilla** sound effects, please let me know.
+As of v1.22.0, I believe I have mapped all vanilla sounds to have audio descriptions. If I've missed any, instead of displaying a description like "Drifter groans," it'll show up as "creature/drifter-aggro." If you see any like this for **vanilla** sound effects, please let me know.
 
 ## Compatibility
 
