@@ -26,6 +26,9 @@
     "channel": "splash",
     "priority": 1
   },
+  "environment/rapids": {
+    "tags": ["ambient"]
+  },
 
   "environment/rainwindow": {
     "channel": "rain",
@@ -106,8 +109,12 @@
   "voice/accordion": {},
   "voice/altoflute": {},
   "voice/clarinet": {},
+  "voice/duduk": {},
   "voice/harmonica": {},
+  "voice/harp": {},
+  "voice/harpsichord": {},
   "voice/oboe": {},
+  "voice/ocarina": {},
   "voice/sax": {},
   "voice/trumpet": {},
   "voice/tuba": {},
@@ -139,6 +146,7 @@
   "block/anvil": {},
   "block/barrelclose": {},
   "block/barrelopen": {},
+  "block/barrel": {},
   "block/basketclose": {},
   "block/basketopen": {},
   "block/ceramicbreak": {},
@@ -158,8 +166,10 @@
   "block/door": {},
   "block/glass": {},
   "block/gravel": {},
+  "block/grindingwheel": {},
   "block/heavyice": {},
   "block/heavymetal": {},
+  "block/heavymetal-hit": {},
   "block/hewnfancegate": {},
   "block/hopperopen": {},
   "block/hoppertumble": {},
@@ -187,6 +197,11 @@
   "block/pump": {},
   "block/pumpkin": {},
   "block/quern": {},
+  "block/reedtrapshake": {},
+  "block/reedtrapshut": {
+    "tags": ["notice"]
+  },
+  "block/riftward": {},
   "block/rock-break-pickaxe": {},
   "block/rock-hit-pickaxe": {},
   "block/sand": {},
@@ -200,6 +215,8 @@
   "block/vesselopen": {},
   "block/vinyl": {},
   "block/water": {},
+  "block/waterwheel-water": {},
+  "block/waterwheel-wood": {},
   "block/wood-tool": {},
   "block/woodcreak": {},
 
@@ -212,11 +229,30 @@
   "creature/bear/flee": {
     "tags": ["creature", "hostile"]
   },
+  "creature/bear/footsteps/dirt/bear-footstep-dirt": {
+    "tags": ["creature", "hostile"]
+  },
   "creature/bear/growl": {
     "tags": ["warning", "creature", "hostile"]
   },
   "creature/bear/hurt": {
     "tags": ["creature", "hostile", "hurt"]
+  },
+  
+  "creature/animal/mammal/hooved/deer/elk-bellow": {
+    "tags": ["creature"]
+  },
+  "creature/animal/mammal/hooved/deer/elk-bellowafter": {
+    "tags": ["creature"]
+  },
+  "creature/animal/mammal/hooved/deer/elk-bugle": {
+    "tags": ["creature"]
+  },
+  "creature/animal/mammal/hooved/deer/elk-death": {
+    "tags": ["creature"]
+  },
+  "creature/animal/mammal/hooved/deer/elk-hurt": {
+    "tags": ["creature"]
   },
 
   "creature/animal-eat-small": {
@@ -237,6 +273,9 @@
     "tags": ["creature", "hostile"]
   },
   "creature/cicada-short-loop": {
+    "tags": ["creature", "ambient"]
+  },
+  "creature/cicada-short-looping": {
     "tags": ["creature", "ambient"]
   },
   "creature/cicada": {
@@ -293,6 +332,46 @@
     "tags": ["warning", "creature", "rust", "hostile", "idle"]
   },
 
+  "creature/bell/charlemange/death/charlemange-death": {
+    "tags": ["creature", "rust"]
+  },
+  "creature/bell/charlemange/happy/char-happy-chirp": {
+    "tags": ["creature", "rust"]
+  },
+  "creature/bell/charlemange/happy/char-happy-wag": {
+    "tags": ["creature", "rust"]
+  },
+  "creature/bell/charlemange/hide/char-hide-loop": {
+    "tags": ["creature", "rust"]
+  },
+  "creature/bell/charlemange/hurt/char-hit": {
+    "tags": ["creature", "rust", "hurt"]
+  },
+  "creature/bell/charlemange/listen/char-listen": {
+    "tags": ["creature", "rust"]
+  },
+  "creature/bell/charlemange/look/char-look": {
+    "tags": ["creature", "rust"]
+  },
+  "creature/bell/charlemange/run/char-run-move": {
+    "tags": ["creature", "rust"]
+  },
+  "creature/bell/charlemange/run/char-run-rebound": {
+    "tags": ["creature", "rust"]
+  },
+  "creature/bell/charlemange/run/char-walk-step": {
+    "tags": ["creature", "rust"]
+  },
+  "creature/bell/charlemange/sleep/char-sleep": {
+    "tags": ["creature", "rust"]
+  },
+  "creature/bell/charlemange/walk/char-walk-move": {
+    "tags": ["creature", "rust"]
+  },
+  "creature/bell/charlemange/walk/char-walk-step": {
+    "tags": ["creature", "rust"]
+  },
+
   "creature/bowtorn/death": {
     "tags": ["creature", "hostile", "rust"]
   },
@@ -340,6 +419,9 @@
   "creature/erel/call": {
     "tags": ["creature", "hostile", "rust"]
   },
+  "creature/erel/dive": {
+    "tags": ["creature", "hostile", "rust", "warning"]
+  },
   "creature/erel/fire": {
     "tags": ["creature", "hostile", "rust"]
   },
@@ -351,6 +433,9 @@
   },
   "creature/erel/hurt": {
     "tags": ["creature", "hostile", "rust", "hurt"]
+  },
+  "creature/erel/slam": {
+    "tags": ["creature", "hostile", "rust"]
   },
 
   "creature/locust/death": {
@@ -576,6 +661,9 @@
   "creature/wolf/attack": {
     "tags": ["creature", "hostile"]
   },
+  "creature/wolf/footsteps/dirt/footstep-wolf-dirt": {
+    "tags": ["creature", "hostile"]
+  },
   "creature/wolf/growl": {
     "tags": ["warning", "creature", "hostile"]
   },
@@ -600,7 +688,9 @@
 
   "effect/anvilhit": {},
   "effect/anvilmergehit": {},
+  "effect/bellows": {},
   "effect/cashregister": {},
+  "effect/clayform": {},
   "effect/clothrip": {},
   "effect/cooking": {},
   "effect/crusher-impact": {},
@@ -622,8 +712,11 @@
   "effect/mediumexplosion": {
     "tags": ["warning"]
   },
+  "effect/metalgrinding": {},
   "effect/moltenmetal": {},
+  "effect/noise": {},
   "effect/planetary_gears": {},
+  "effect/poleswing": {},
   "effect/portal": {},
   "effect/receptionbell": {},
   "effect/rockslide": {},
@@ -634,6 +727,7 @@
   "effect/smallexplosion": {
     "tags": ["warning"]
   },
+  "effect/snowshovelling": {},
   "effect/squish": {},
   "effect/stonecrush": {},
   "effect/swoosh": {},
@@ -664,6 +758,7 @@
   "effect/watering-loop": {},
   "effect/woodgrind": {},
   "effect/woodswitch": {},
+  "effect/wormgrunting": {},
   "effect/writing": {},
   "held/bookclose": {},
   "held/bookturn": {},
@@ -677,6 +772,7 @@
   "held/torch-unequip": {},
 
   "instrument/elk-call": {},
+  "instrument/elkcall": {},
 
   "player/chalkdraw": {},
   "player/clothrepair": {},
@@ -697,6 +793,11 @@
   "player/strike": {},
   "player/wetclothsqueeze": {},
   "tool/breakreinforced": {},
+  "tool/groundcrafting/boneflute": {},
+  "tool/groundcrafting/hidecut": {},
+  "tool/groundcrafting/hidescrape": {},
+  "tool/groundcrafting/saw": {},
+  "tool/groundcrafting/shears": {},
   "tool/padlock": {},
   "tool/reinforce": {},
   "tool/scythe": {},
