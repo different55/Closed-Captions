@@ -215,8 +215,14 @@
   "block/vesselopen": {},
   "block/vinyl": {},
   "block/water": {},
-  "block/waterwheel-water": {},
-  "block/waterwheel-wood": {},
+  "block/waterwheel-water": {
+    "channel": "waterwheel",
+    "priority": 1
+  },
+  "block/waterwheel-wood": {
+    "channel": "waterwheel",
+    "priority": 1
+  },
   "block/wood-tool": {},
   "block/woodcreak": {},
 
@@ -237,22 +243,6 @@
   },
   "creature/bear/hurt": {
     "tags": ["creature", "hostile", "hurt"]
-  },
-  
-  "creature/animal/mammal/hooved/deer/elk-bellow": {
-    "tags": ["creature"]
-  },
-  "creature/animal/mammal/hooved/deer/elk-bellowafter": {
-    "tags": ["creature"]
-  },
-  "creature/animal/mammal/hooved/deer/elk-bugle": {
-    "tags": ["creature"]
-  },
-  "creature/animal/mammal/hooved/deer/elk-death": {
-    "tags": ["creature"]
-  },
-  "creature/animal/mammal/hooved/deer/elk-hurt": {
-    "tags": ["creature"]
   },
 
   "creature/animal-eat-small": {
@@ -562,6 +552,21 @@
   },
   "creature/hooved/large/elk/bugle": {
     "tags": ["creature", "hostile"]
+  },
+  "creature/animal/mammal/hooved/deer/elk-bellow": {
+    "tags": ["creature"]
+  },
+  "creature/animal/mammal/hooved/deer/elk-bellowafter": {
+    "tags": ["creature"]
+  },
+  "creature/animal/mammal/hooved/deer/elk-bugle": {
+    "tags": ["creature"]
+  },
+  "creature/animal/mammal/hooved/deer/elk-death": {
+    "tags": ["creature"]
+  },
+  "creature/animal/mammal/hooved/deer/elk-hurt": {
+    "tags": ["creature"]
   },
 
   "creature/hooved/large/redstag/bellow": {
