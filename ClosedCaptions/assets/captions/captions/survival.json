@@ -489,7 +489,7 @@
     "tags": ["creature", "neutral"]
   },
   "creature/fox/growl": {
-    "tags": ["warning", "creature", "neutral"]
+    "tags": ["creature", "neutral"]
   },
   "creature/fox/hurt": {
     "tags": ["creature", "neutral", "hurt"]
