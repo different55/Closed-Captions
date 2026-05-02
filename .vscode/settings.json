@@ -3,5 +3,6 @@
   "files.associations": {
     "server-*.txt": "log",
     "client-*.txt": "log"
-  }
+  },
+  "git.enabled": false
 }
