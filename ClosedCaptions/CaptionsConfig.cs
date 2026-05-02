@@ -14,9 +14,14 @@ public class CaptionsConfig
     public bool InvertedWarnings = false;
     [Description("Which types of captions to ignore. Normal tags are \"player\", \"ambient\", \"warning\", and \"notice\".")]
     public List<string> IgnoredTags = [];
-    [Description("How long to persist captions after the sound stops.")]
+    [Description("Which types of captions to fade after some time.")]
+    public List<string> ThrottledTags = ["ambient", "weather"];
+    [Description("How long until throttled captions are hidden, even if still playing.")]
+    [Range(0, 30)]
+    public float ThrottledDuration = 10.0f;
+    [Description("How long to captions persist after the sound stops.")]
     [Range(0, 10)]
-    public float Duration = 4.0f;
+    public float Duration = 3.0f;
     [Description("How long it takes for captions to fade out.")]
     [Range(0, 4)]
     public float FadeDuration = 1.0f;
