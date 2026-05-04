@@ -123,7 +123,7 @@ public class Caption
     private static void AddCaption(Caption newCaption)
     {
         // Refresh existing slot if it's already present.
-        for (var i = 0; i < Captions.Count; i++) //var oldCaption in Captions)
+        for (var i = 0; i < Captions.Count; i++)
         {
             var oldCaption = Captions[i];
             
