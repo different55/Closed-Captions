@@ -112,9 +112,11 @@ public class Caption
             Channel = captionData.Channel ?? name,
             Priority = captionData.Priority,
             Tags = captionData.Tags,
+            FirstHeard = _api.ElapsedMilliseconds,
             LastHeard = _api.ElapsedMilliseconds,
             Position = sound.Position,
             Audibility = audibility,
+            Throttled = CaptionsSystem.Config.ThrottledTags.Any(tag => captionData.Tags?.Contains(tag) ?? false),
         });
     }
 
@@ -130,8 +132,10 @@ public class Caption
                 continue;
             
             oldCaption.LastHeard = newCaption.LastHeard;
+            newCaption.FirstHeard = oldCaption.FirstHeard;
 
             // If this caption has a higher priority, or the same priority but is louder, replace it.
+            // TODO: With the priority reset hack in SyncCaptions, this is always true.
             if (newCaption.Priority > oldCaption.Priority ||
                 (newCaption.Priority == oldCaption.Priority && newCaption.Audibility > oldCaption.Audibility))
             {
@@ -147,12 +151,15 @@ public class Caption
     
     public long LastHeard;
     public double Age => (_api.ElapsedMilliseconds-LastHeard) / 1000.0;
+    public long FirstHeard;
+    public double TotalAge => (_api.ElapsedMilliseconds - FirstHeard) / 1000.0;
     public string Name;
     public string Channel = null;
     public int Priority = 1;
     public List<string> Tags = [];
     public Vec3f Position;
     public float Audibility;
+    public bool Throttled;
     
     public bool HasTag(string tag) => Tags?.Contains(tag) ?? false;
 }

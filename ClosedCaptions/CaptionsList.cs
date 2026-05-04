@@ -3,6 +3,7 @@ using Cairo;
 using Vintagestory.API.MathTools;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace ClosedCaptions;
 
@@ -81,9 +82,24 @@ public class CaptionsList : GuiElement
         
         foreach (var caption in Captions)
         {
+            // Calculate brightness.
+            // Fade based on age, full brightness above Duration, fading to 0 at Duration+FadeDuration.
+            var brightness = (1 - ((caption.Age - Cfg.Duration + Cfg.FadeDuration) / Cfg.FadeDuration));
+            // Cap brightness by audibility of the sound.
+            brightness *= Math.Max(1, caption.Audibility) / 2 + 0.5;
+            // Cap throttled brightness beyond ThrottledDuration, fading to 0 at ThrottledDuration+FadeDuration.
+            if (caption.Throttled)
+            {
+                api.Logger.Debug("Fading out " + caption.Name + " " + caption.TotalAge);
+                brightness *= (1 - ((caption.TotalAge - Cfg.ThrottledDuration + Cfg.FadeDuration) / Cfg.FadeDuration));
+            }
+            
+            // Skip captions with 0 brightness
+            if (brightness < 0.0001)
+                continue;
+            
             y -= (GrowUp) ? Cfg.Height : -Cfg.Height;
-        
-            var brightness = ((1 - ((caption.Age - Cfg.Duration + Cfg.FadeDuration) / Cfg.FadeDuration)) * Math.Max(1, caption.Audibility) / 2 + 0.5);
+
 
             var bg = new Color(0, 0, 0, 1);
             var fg = new Color(1, 1, 1, 1);
