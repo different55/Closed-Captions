@@ -18,7 +18,7 @@ public class CaptionsConfig
     public List<string> ThrottledTags = ["ambient", "weather"];
     [Description("How long until throttled captions are hidden, even if still playing.")]
     [Range(0, 30)]
-    public float ThrottledDuration = 10.0f;
+    public float ThrottledDuration = 3.0f;
     [Description("How long to captions persist after the sound stops.")]
     [Range(0, 10)]
     public float Duration = 3.0f;
