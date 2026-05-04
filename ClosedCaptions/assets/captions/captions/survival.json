@@ -227,7 +227,7 @@
   "block/woodcreak": {},
 
   "creature/bear/aggro": {
-    "tags": ["warning", "creature", "hostile"]
+    "tags": ["warning", "creature", "hostile", "aggro"]
   },
   "creature/bear/attack": {
     "tags": ["creature", "hostile"]
@@ -288,7 +288,7 @@
   "creature/strawdummy-hit": {},
 
   "creature/drifter-aggro": {
-    "tags": ["warning", "rust", "creature", "hostile"]
+    "tags": ["warning", "rust", "creature", "hostile", "aggro"]
   },
   "creature/drifter-death": {
     "tags": ["creature", "rust", "hostile"]
@@ -442,7 +442,7 @@
   },
 
   "creature/shiver/aggro": {
-    "tags": ["warning", "creature", "hostile", "rust"]
+    "tags": ["warning", "creature", "hostile", "rust", "aggro"]
   },
   "creature/shiver/death": {
     "tags": ["creature", "hostile", "rust"]
@@ -631,7 +631,7 @@
   },
 
   "creature/raccoon/aggro": {
-    "tags": ["warning", "creature", "neutral"]
+    "tags": ["warning", "creature", "neutral", "aggro"]
   },
   "creature/raccoon/death": {
     "tags": ["creature", "neutral"]
@@ -812,92 +812,92 @@
   "walk/cloth": {
     "channel": "movement",
     "priority": 1,
-    "tags": ["player"]
+    "tags": ["player", "movement"]
   },
   "walk/deepsnow": {
     "channel": "movement",
     "priority": 1,
-    "tags": ["player"]
+    "tags": ["player", "movement"]
   },
   "walk/default": {
     "channel": "movement",
     "priority": 1,
-    "tags": ["player"]
+    "tags": ["player", "movement"]
   },
   "walk/glass": {
     "channel": "movement",
     "priority": 1,
-    "tags": ["player"]
+    "tags": ["player", "movement"]
   },
   "walk/grass": {
     "channel": "movement",
     "priority": 1,
-    "tags": ["player"]
+    "tags": ["player", "movement"]
   },
   "walk/gravel": {
     "channel": "movement",
     "priority": 1,
-    "tags": ["player"]
+    "tags": ["player", "movement"]
   },
   "walk/ice": {
     "channel": "movement",
     "priority": 1,
-    "tags": ["player"]
+    "tags": ["player", "movement"]
   },
   "walk/lava": {
     "channel": "movement",
     "priority": 1,
-    "tags": ["player"]
+    "tags": ["player", "movement"]
   },
   "walk/sand": {
     "channel": "movement",
     "priority": 1,
-    "tags": ["player"]
+    "tags": ["player", "movement"]
   },
   "walk/sludge": {
     "channel": "movement",
     "priority": 1,
-    "tags": ["player"]
+    "tags": ["player", "movement"]
   },
   "walk/snow": {
     "channel": "movement",
     "priority": 1,
-    "tags": ["player"]
+    "tags": ["player", "movement"]
   },
   "walk/stone": {
     "channel": "movement",
     "priority": 1,
-    "tags": ["player"]
+    "tags": ["player", "movement"]
   },
   "walk/water": {
     "channel": "movement",
     "priority": 1,
-    "tags": ["player"]
+    "tags": ["player", "movement"]
   },
   "walk/wood": {
     "channel": "movement",
     "priority": 1,
-    "tags": ["player"]
+    "tags": ["player", "movement"]
   },
   "walk/inside/leafy/bushrustle": {
     "channel": "movement",
     "priority": 1,
-    "tags": ["player"]
+    "tags": ["player", "movement"]
   },
   "wearable/brigandine": {
-    "tags": ["player"]
+    "tags": ["player", "movement"]
   },
   "wearable/chain": {
-    "tags": ["player"]
+    "tags": ["player", "movement"]
   },
   "wearable/leather": {
-    "tags": ["player"]
+    "tags": ["player", "movement"]
   },
   "wearable/plate": {
-    "tags": ["player"]
+    "tags": ["player", "movement"]
   },
   "wearable/scale": {
-    "tags": ["player"]
+    "tags": ["player", "movement"]
   },
 
   "weather/tracks/verylowtremble": {
