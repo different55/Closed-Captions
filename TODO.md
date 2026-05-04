@@ -9,7 +9,8 @@
 * Swap "rain patters" and "rain pours". Maybe change one to rain splashes?
 * Add list of sounds to each caption.
 * Add normalization for sound levels.
-* Reduce volume of captions.
-  * They're so noisy down there, and a lot of it isn't anything needing attention.
-  * Lots of weather conditions and ambient sounds. Those can be disabled, but maybe there's an intermediate setting where they can have a cooldown. Maybe a max display time where they're hidden until they stop.
+* Add different methods to consolidate channel sounds (loudest, closest, priority).
 * Make size of icons configurable.
+* Currently, throttled sounds are suppressed entirely. Maybe higher priorities can Refresh.
+* Make hostile and notice tags override throttling.
+* Add an "all" pseudo-tag that affects all sounds.
