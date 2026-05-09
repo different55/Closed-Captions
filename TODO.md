@@ -7,10 +7,11 @@
 * Improve font sizing.
 * Check on the hooved animals, are they passive or hostile?
 * Swap "rain patters" and "rain pours". Maybe change one to rain splashes?
-* Add list of sounds to each caption.
+*** Add list of sounds to each caption.
 * Add normalization for sound levels.
 * Add different methods to consolidate channel sounds (loudest, closest, priority).
 * Make size of icons configurable.
 * Currently, throttled sounds are suppressed entirely. Maybe higher priorities can Refresh.
 * Make hostile and notice tags override throttling.
 * Add an "all" pseudo-tag that affects all sounds.
+* Redo the AddCaption status checks - right now the priority check is permanently true because of the first chunk of SyncCaptions. This among other things would be fixed by stashing a list of all currently active sounds inside each caption.
