@@ -12,7 +12,7 @@ namespace ClosedCaptions;
 public class Caption
 {
     private const double AudibilityThreshold = 0.07;
-    private static Dictionary<string, LoadedCaptionData> _metadata;
+    private static Dictionary<string, CaptionedSound> _metadata;
     private static ICoreClientAPI _api;
     private static Queue<ILoadedSound> _activeSounds;
     public static List<Caption> Captions = [];
@@ -30,15 +30,15 @@ public class Caption
     // Reloads caption metadata from assets.
     public static void ReloadMetadata()
     {
-        var dataFiles = _api.World.AssetManager.GetMany<Dictionary<string, LoadedCaptionData>>(_api.Logger, "captions/");
-        _metadata = new Dictionary<string, LoadedCaptionData>();
+        var dataFiles = _api.World.AssetManager.GetMany<Dictionary<string, CaptionedSound>>(_api.Logger, "captions/");
+        _metadata = new Dictionary<string, CaptionedSound>();
         foreach (var dataFile in dataFiles)
             dataFile.Value.ToList().ForEach(i => _metadata[i.Key] = i.Value);
     }
 
-    private static LoadedCaptionData GetData(string id)
+    private static CaptionedSound GetData(string id)
     {
-        return _metadata.GetValueOrDefault(id) ?? new LoadedCaptionData();
+        return _metadata.GetValueOrDefault(id) ?? new CaptionedSound();
     }
     
     // Synchronizes the internal caption list with the currently active sounds.
@@ -60,7 +60,7 @@ public class Caption
         }
         
         // Prune old captions.
-        Captions.RemoveAll(caption => caption.Age > CaptionsSystem.Config.Duration);
+        Captions.RemoveAll(caption => caption.Decay > CaptionsSystem.Config.Duration);
     }
 
     private static void ProcessSound(SoundParams sound)
@@ -150,9 +150,9 @@ public class Caption
     }
     
     public long LastHeard;
-    public double Age => (_api.ElapsedMilliseconds-LastHeard) / 1000.0;
+    public double Decay => (_api.ElapsedMilliseconds-LastHeard) / 1000.0;
     public long FirstHeard;
-    public double TotalAge => (_api.ElapsedMilliseconds - FirstHeard) / 1000.0;
+    public double Age => (_api.ElapsedMilliseconds - FirstHeard) / 1000.0;
     public string Name;
     public string Channel = null;
     public int Priority = 1;
@@ -160,6 +160,7 @@ public class Caption
     public Vec3f Position;
     public float Audibility;
     public bool Throttled;
-    
+    public List<CaptionedSound> ActiveSounds = [];
+
     public bool HasTag(string tag) => Tags?.Contains(tag) ?? false;
 }

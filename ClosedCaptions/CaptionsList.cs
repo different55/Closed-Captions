@@ -84,14 +84,14 @@ public class CaptionsList : GuiElement
         {
             // Calculate brightness.
             // Fade based on age, full brightness above Duration, fading to 0 at Duration+FadeDuration.
-            var brightness = (1 - ((caption.Age - Cfg.Duration + Cfg.FadeDuration) / Cfg.FadeDuration));
+            var brightness = (1 - ((caption.Decay - Cfg.Duration + Cfg.FadeDuration) / Cfg.FadeDuration));
             // Cap brightness by audibility of the sound.
             brightness *= Math.Max(1, caption.Audibility) / 2 + 0.5;
             // Cap throttled brightness beyond ThrottledDuration, fading to 0 at ThrottledDuration+FadeDuration.
             if (caption.Throttled)
             {
-                api.Logger.Debug("Fading out " + caption.Name + " " + caption.TotalAge);
-                brightness *= (1 - ((caption.TotalAge - Cfg.ThrottledDuration + Cfg.FadeDuration) / Cfg.FadeDuration));
+                api.Logger.Debug("Fading out " + caption.Name + " " + caption.Age);
+                brightness *= (1 - ((caption.Age - Cfg.ThrottledDuration + Cfg.FadeDuration) / Cfg.FadeDuration));
             }
             
             // Skip captions with 0 brightness
