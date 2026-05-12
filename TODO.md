@@ -15,3 +15,4 @@
 * Make hostile and notice tags override throttling.
 * Add an "all" pseudo-tag that affects all sounds.
 * Redo the AddCaption status checks - right now the priority check is permanently true because of the first chunk of SyncCaptions. This among other things would be fixed by stashing a list of all currently active sounds inside each caption.
+* Just feels odd to have tracking hanging out down in Caption.cs as a bunch of static fields. Maybe this should be part of the System?
