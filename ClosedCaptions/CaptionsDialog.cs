@@ -6,7 +6,7 @@ public class CaptionsDialog : HudElement
 {
     public CaptionsList CaptionsList;
     
-    public CaptionsDialog(ICoreClientAPI capi) : base(capi)
+    public CaptionsDialog(ICoreClientAPI capi, CaptionTracker tracker) : base(capi)
     {
         var cfg = CaptionsSystem.Config;
         var dialogBounds = ElementBounds.FixedSize(
@@ -22,7 +22,7 @@ public class CaptionsDialog : HudElement
             cfg.Height*cfg.MaxCaptions+2
             );
         dialogBounds.WithChild(listBounds);
-        CaptionsList = new CaptionsList(SingleComposer.Api, listBounds);
+        CaptionsList = new CaptionsList(SingleComposer.Api, listBounds, tracker);
         SingleComposer.AddInteractiveElement(CaptionsList, "captionsList");
         
         SingleComposer.Compose(false);

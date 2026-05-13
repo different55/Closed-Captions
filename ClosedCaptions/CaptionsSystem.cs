@@ -6,9 +6,10 @@ namespace ClosedCaptions;
 
 public class CaptionsSystem : ModSystem
 {
+    private static CaptionTracker _tracker;
     private static CaptionsDialog _dialog;
     public static CaptionsConfig Config;
-    private static ICoreClientAPI _api;
+    internal static ICoreClientAPI _api;
     private static AssetCategory Category;
 
     public override void StartPre(ICoreAPI api)
@@ -22,8 +23,6 @@ public class CaptionsSystem : ModSystem
         base.StartClientSide(capi);
         _api = capi;
         LoadConfig();
-        
-        Caption.Initialize(_api);
         
         if (!Config.Enabled) return;
          
@@ -56,7 +55,8 @@ public class CaptionsSystem : ModSystem
         _dialog?.TryClose();
         LoadConfig();
         if (!Config.Enabled) return;
-        _dialog = new CaptionsDialog(_api);
+        _tracker = new CaptionTracker(_api);
+        _dialog = new CaptionsDialog(_api, _tracker);
         _dialog.TryOpen();
     }
 }

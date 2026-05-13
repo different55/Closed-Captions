@@ -13,8 +13,9 @@ public class CaptionsList : GuiElement
     
     private CairoFont _font;
 
-    private static CaptionsConfig Cfg => CaptionsSystem.Config;
-    private static List<Caption> Captions => Caption.Captions;
+    private CaptionsConfig Cfg => CaptionsSystem.Config;
+    private CaptionTracker _tracker;
+    private List<Caption> Captions => _tracker.Captions;
 
     private bool GrowUp => 
         Cfg.Position == EnumDialogArea.LeftBottom ||
@@ -27,8 +28,9 @@ public class CaptionsList : GuiElement
 
     private TextExtents _fontMetrics;
     
-    public CaptionsList(ICoreClientAPI capi, ElementBounds bounds) : base(capi, bounds) {
+    public CaptionsList(ICoreClientAPI capi, ElementBounds bounds, CaptionTracker tracker) : base(capi, bounds) {
         _texture = new LoadedTexture(capi);
+        _tracker = tracker;
         
         _font = CairoFont.WhiteMediumText()
             .WithFont(Cfg.Font)
@@ -47,7 +49,7 @@ public class CaptionsList : GuiElement
     }
     
     public override void RenderInteractiveElements(float deltaTime) {
-        Caption.SyncCaptions();
+        _tracker.SyncCaptions();
         RenderTexture();
     }
     
@@ -198,7 +200,7 @@ public class CaptionsList : GuiElement
         }
     }
 
-    private static string GetDisplayName(Caption caption)
+    private string GetDisplayName(Caption caption)
     {
         if (!Cfg.ShowSymbols) return caption.Name;
         if (caption.HasTag("warning")) return "! " + caption.Name + " !";
@@ -206,7 +208,7 @@ public class CaptionsList : GuiElement
         return caption.Name;
     }
 
-    private static void RenderTriangle(Context ctx, double x, double y, double w, double h)
+    private void RenderTriangle(Context ctx, double x, double y, double w, double h)
     {
         ctx.NewPath();
         ctx.MoveTo(x, y);
